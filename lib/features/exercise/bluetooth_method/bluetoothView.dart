@@ -20,7 +20,10 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   late AnimationController _animationController;
   late Animation<double> _pulseAnimation;
 
-  String _setMessage = "4SET START!!"; // 초기 메시지는 빈 문자열
+  double maxHeight = 0.0;
+  double maxWidth = 0.0;
+
+  String _setMessage = "START!!"; // 초기 메시지는 빈 문자열
 
   @override
   void initState() {
@@ -66,7 +69,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
         context: context,
         builder: (context) {
           return Container(
-            height: MediaQuery.of(context).size.height * 0.25, // 화면의 1/4 높이
+            height: maxHeight * 0.25, // 화면의 1/4 높이
             color: Colors.white,
             child: ListView.builder(
               itemCount: 10, // 이곳에서 원하는 setCount 범위를 설정하세요
@@ -93,11 +96,17 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     // 4초 후에 홈 화면으로 이동하는 코드
 
     print("0초 지남, 홈 화면으로 이동 시도중");
-    goRouter.go("/home");
+    //goRouter.go("/home");
+    BluetoothViewModel.setCount = 4;
+    viewModel?.disconnect();
+    viewModel?.dispose();
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    maxWidth = MediaQuery.of(context).size.width;
+    maxHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Stack(
         children: [
@@ -105,23 +114,23 @@ class _BluetoothScreenState extends State<BluetoothScreen>
             top: 0,
             left: 0,
             right: 0,
-            bottom: MediaQuery.of(context).size.height * 0.2,
+            bottom: maxHeight * 0,
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.grey.shade800,
                 borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
+                  bottomLeft: Radius.circular(15),
+                  bottomRight: Radius.circular(15),
                 ),
               ),
               child: Column(
                 children: [
                   Padding(
                     padding: EdgeInsets.fromLTRB(
-                      MediaQuery.of(context).size.width * 0.05, //left
-                      MediaQuery.of(context).size.height * 0.05, //top
-                      MediaQuery.of(context).size.width * 0.05, //right
-                      MediaQuery.of(context).size.height * 0.05, //top
+                      maxWidth * 0.05, //left
+                      maxHeight * 0, //top
+                      maxWidth * 0.05, //right
+                      maxHeight * 0, //bottom
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -140,8 +149,8 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                           },
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.15,
-                          height: MediaQuery.of(context).size.width * 0.15,
+                          width: maxWidth * 0.15,
+                          height: maxHeight * 0.15,
                           child: Image.asset("Images/logo_white.png"),
                         ),
                         IconButton(
@@ -157,15 +166,12 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: Sizes.size52),
                   Container(
                     child: ValueListenableBuilder<String>(
                       valueListenable: viewModel!.receivedDataNotifier,
                       builder: (context, receivedData, _) => Center(
                         child: Text(
-                          receivedData
-                              .replaceAll("\$r", '')
-                              .replaceAll(';', ''),
+                          "${receivedData.replaceAll("\$r", '').replaceAll(';', '')} KG",
                           textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
                           style: const TextStyle(
                             fontSize: Sizes.size52,
@@ -176,7 +182,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(height: Sizes.size52),
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,

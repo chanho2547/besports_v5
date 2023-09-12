@@ -1,5 +1,6 @@
 import 'package:besports_v5/constants/sizes.dart';
 import 'package:besports_v5/features/dashboard/dashboard_screen.dart';
+import 'package:besports_v5/features/exercise/bluetooth_method/bluetoothView.dart';
 
 import 'package:besports_v5/features/history/history_screen.dart';
 import 'package:besports_v5/features/profile/profile_screen.dart';
@@ -68,16 +69,8 @@ class MyHomePageState extends State<MyHomePage> {
           alignment: Alignment.topCenter,
           child: ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(20),
-              child: Center(
-                child: Text(
-                  message,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
+            child: BluetoothScreen(
+              addr: message,
             ),
           ),
         );
