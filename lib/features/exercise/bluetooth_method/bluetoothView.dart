@@ -166,6 +166,9 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                       ],
                     ),
                   ),
+                  SizedBox(
+                    height: maxHeight * 0.12,
+                  ),
                   Container(
                     child: ValueListenableBuilder<String>(
                       valueListenable: viewModel!.receivedDataNotifier,
@@ -181,6 +184,9 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                         ),
                       ),
                     ),
+                  ),
+                  SizedBox(
+                    height: maxHeight * 0.05,
                   ),
                   Center(
                     child: Column(
@@ -217,7 +223,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             ),
                           ),
                         ),
-                        const SizedBox(height: 50), // 간격을 주기 위한 코드
+                        SizedBox(height: maxHeight * 0.05), // 간격을 주기 위한 코드
                         Text(_setMessage,
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 40)),
