@@ -13,6 +13,7 @@ class BluetoothViewModel {
   StreamSubscription? _scanSubscription;
   Timer? _debounceTimer;
   static int setCount = 4;
+  bool isRest = false;
   ValueNotifier<String> receivedDataNotifier = ValueNotifier<String>("");
 
   NavigationCallback? onNavigateToHome;
@@ -113,7 +114,10 @@ class BluetoothViewModel {
 
   // 디바운스된 카운터 업데이트 메서드
   void _updateCount() {
-    countNotifier.value--;
+    if (!isRest) {
+      // rest 상태가 아닐 때만 카운트 감소
+      countNotifier.value--;
+    }
 
     if (countNotifier.value == 0) {
       _debounceTimer = Timer(const Duration(microseconds: 300), () {
@@ -124,6 +128,13 @@ class BluetoothViewModel {
   }
 
   void _updateData() {}
+  void enterRestState() {
+    isRest = true;
+  }
+
+  void exitRestState() {
+    isRest = false;
+  }
 
   // dispose 메서드
   void dispose() {

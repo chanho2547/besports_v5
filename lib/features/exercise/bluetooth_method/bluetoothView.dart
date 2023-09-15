@@ -67,6 +67,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   }
 
   void _showRestTimeSheet() async {
+    viewModel?.enterRestState();
     int start = 5;
 
     // 시간이 변화할 때마다 이 Stream에서 이벤트를 내보냅니다.
@@ -89,6 +90,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
             builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 Future.delayed(Duration.zero, () {
+                  viewModel?.exitRestState();
                   Navigator.of(context).pop(); // 바텀 시트를 닫습니다.
                 });
               }
