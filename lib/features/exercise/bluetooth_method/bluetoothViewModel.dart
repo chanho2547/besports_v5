@@ -21,6 +21,8 @@ class BluetoothViewModel {
 
   BluetoothViewModel({required this.deviceAddr});
 
+  bool isPaused = false; // 카운트 일시 중지 상태
+
   // 초기화 메서드
   void initialize() async {
     // 이전 연결/스캔 구독 및 타이머 해제

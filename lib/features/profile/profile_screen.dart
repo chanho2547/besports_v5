@@ -15,15 +15,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late ScrollController _scrollController;
 
   double? titleTopPadding;
+  double _opacity = 1.0;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController()
       ..addListener(() {
+        final maxScroll = MediaQuery.of(context).size.height;
+        final currentScroll = _scrollController.offset;
+        final percentageScrolled = (currentScroll / maxScroll).clamp(0.0, 1.0);
+
         if (_scrollController.offset <=
             MediaQuery.of(context).size.height * 0.35) {
           setState(() {
+            _opacity =
+                (1 - percentageScrolled).clamp(0.0, 1.0); // <-- opacity를 업데이트
             titleTopPadding = MediaQuery.of(context).size.height * 0.35 -
                 _scrollController.offset;
           });
@@ -100,47 +107,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
               collapsedHeight: appHeight * 0.1,
               expandedHeight: appHeight * 0.4,
               flexibleSpace: FlexibleSpaceBar(
-                background: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: appHeight * 0.05,
-                    ),
-                    CircleAvatar(
-                      backgroundImage: const AssetImage('Images/main.jpg'),
-                      radius: appWidth * 0.15,
-                    ),
-                    SizedBox(height: appHeight * 0.02),
-                    Text(
-                      name,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: appWidth * 0.07,
-                        fontWeight: FontWeight.w400,
+                background: Opacity(
+                  opacity: _opacity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: appHeight * 0.05,
                       ),
-                    ),
-                    SizedBox(height: appHeight * 0.015),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          FontAwesomeIcons.locationDot,
+                      CircleAvatar(
+                        backgroundImage: const AssetImage('Images/main.jpg'),
+                        radius: appWidth * 0.15,
+                      ),
+                      SizedBox(height: appHeight * 0.02),
+                      Text(
+                        name,
+                        style: TextStyle(
                           color: Colors.white,
+                          fontSize: appWidth * 0.07,
+                          fontWeight: FontWeight.w400,
                         ),
-                        SizedBox(
-                          width: appWidth * 0.01,
-                        ),
-                        Text(
-                          location,
-                          style: TextStyle(
+                      ),
+                      SizedBox(height: appHeight * 0.015),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            FontAwesomeIcons.locationDot,
                             color: Colors.white,
-                            fontSize: appWidth * 0.04,
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: appHeight * 0.05),
-                  ],
+                          SizedBox(
+                            width: appWidth * 0.01,
+                          ),
+                          Text(
+                            location,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: appWidth * 0.04,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: appHeight * 0.05),
+                    ],
+                  ),
                 ),
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

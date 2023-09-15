@@ -61,6 +61,7 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void _showNFCModal(BuildContext context, String message) {
+    HapticFeedback.vibrate; // 햅틱 피드백 호출
     showTopModal(
       context: context,
       builder: (builder) {
@@ -128,7 +129,6 @@ class MyHomePageState extends State<MyHomePage> {
         physics: const NeverScrollableScrollPhysics(), // 스크롤 기능을 비활성화
         controller: _pageController,
         onPageChanged: (index) {
-          HapticFeedback.lightImpact(); // 햅틱 피드백 호출
           setState(() {
             _currentIndex = index;
           });
@@ -149,6 +149,7 @@ class MyHomePageState extends State<MyHomePage> {
         unselectedItemColor: Colors.grey[500], // 선택되지 않은 아이템의 색상
         iconSize: Sizes.size28,
         onTap: (index) {
+          HapticFeedback.lightImpact(); // 햅틱 피드백 호출
           _pageController.animateToPage(
             index,
             duration: const Duration(milliseconds: 400),

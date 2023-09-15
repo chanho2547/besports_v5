@@ -38,24 +38,24 @@ final goRouter = GoRouter(
       name: ProfileScreen.routeURL,
       builder: (context, state) => const ProfileScreen(),
     ),
-    GoRoute(
-      path: ExerciseScreen.routeURL,
-      name: ExerciseScreen.routeName,
-      pageBuilder: (context, state) => CustomTransitionPage(
-        transitionDuration: const Duration(milliseconds: 300),
-        child: const ExerciseScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          final position = Tween(
-            begin: const Offset(0, 1),
-            end: const Offset(0, 0),
-          ).animate(animation);
-          return SlideTransition(
-            position: position,
-            child: child,
-          );
-        },
-      ),
-    ),
+    // GoRoute(
+    //   path: ExerciseScreen.routeURL,
+    //   name: ExerciseScreen.routeName,
+    //   pageBuilder: (context, state) => CustomTransitionPage(
+    //     transitionDuration: const Duration(milliseconds: 300),
+    //     child: const ExerciseScreen(),
+    //     transitionsBuilder: (context, animation, secondaryAnimation, child) {
+    //       final position = Tween(
+    //         begin: const Offset(0, 1),
+    //         end: const Offset(0, 0),
+    //       ).animate(animation);
+    //       return SlideTransition(
+    //         position: position,
+    //         child: child,
+    //       );
+    //     },
+    //   ),
+    // ),
     GoRoute(
       path: NFCScreen.routeURL,
       name: NFCScreen.routeName,

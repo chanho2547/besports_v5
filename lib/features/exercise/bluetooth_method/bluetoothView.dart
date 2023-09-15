@@ -1,6 +1,7 @@
 import 'package:besports_v5/constants/sizes.dart';
 import 'package:besports_v5/router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:go_router/go_router.dart';
 import 'bluetoothViewModel.dart'; // BluetoothViewModel 위치로 변경하세요.
@@ -41,7 +42,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       vsync: this,
     );
 
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.6).animate(
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
         CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
     viewModel!.countNotifier.addListener(() {
       _animationController.forward().then((_) {
@@ -49,6 +50,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       });
 
       if (viewModel!.countNotifier.value == 0) {
+        _showRestTimeSheet();
         setState(() {
           BluetoothViewModel.setCount--;
           _setMessage = "${BluetoothViewModel.setCount} SET 남음";
@@ -62,6 +64,50 @@ class _BluetoothScreenState extends State<BluetoothScreen>
         });
       }
     });
+  }
+
+  void _showRestTimeSheet() async {
+    int start = 5;
+
+    // 시간이 변화할 때마다 이 Stream에서 이벤트를 내보냅니다.
+    Stream<int> timerStream =
+        Stream<int>.periodic(const Duration(seconds: 1), (second) {
+      return start - second;
+    }).take(start);
+
+    await showModalBottomSheet(
+      context: context,
+      isDismissible: true, // 바텀 시트 외부를 탭하면 바텀 시트가 닫힙니다.
+      builder: (context) {
+        return Container(
+          height: maxHeight,
+          color: Colors.white, // 백그라운드 색상을 흰색으로 설정
+          child: Center(
+              child: StreamBuilder<int>(
+            stream: timerStream,
+            initialData: start,
+            builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                Future.delayed(Duration.zero, () {
+                  Navigator.of(context).pop(); // 바텀 시트를 닫습니다.
+                });
+              }
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text("Rest Time!",
+                      style: TextStyle(color: Colors.black, fontSize: 25)),
+                  const SizedBox(height: 20),
+                  Text("${snapshot.data} seconds",
+                      style:
+                          const TextStyle(color: Colors.black, fontSize: 18)),
+                ],
+              );
+            },
+          )),
+        );
+      },
+    );
   }
 
   void _showSetCountPicker() {
@@ -97,6 +143,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
     print("0초 지남, 홈 화면으로 이동 시도중");
     //goRouter.go("/home");
+    HapticFeedback.lightImpact(); // 햅틱 피드백 호출
     BluetoothViewModel.setCount = 4;
     viewModel?.disconnect();
     viewModel?.dispose();
@@ -203,7 +250,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                                   shape: BoxShape.circle,
                                   color: const Color(0xFF373737), // 초록색 띠
                                   border: Border.all(
-                                    color: Colors.green, // 빨간색 원
+                                    color: Colors.grey.shade100,
                                     width: Sizes.size7,
                                   ),
                                 ),
