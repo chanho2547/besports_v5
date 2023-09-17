@@ -84,7 +84,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       isDismissible: true, // 바텀 시트 외부를 탭하면 바텀 시트가 닫힙니다.
       builder: (context) {
         return Container(
-          height: s.maxHeight,
+          height: s._maxHeight,
           color: Colors.white, // 백그라운드 색상을 흰색으로 설정
           child: Center(
               child: StreamBuilder<int>(

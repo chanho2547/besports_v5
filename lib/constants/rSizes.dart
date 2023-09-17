@@ -1,211 +1,247 @@
 class RSizes {
-  late final double maxHeight;
+  late final double _maxHeight;
   late final double maxWidth;
 
-  RSizes(this.maxHeight, this.maxWidth);
+  RSizes(this._maxHeight, this.maxWidth);
 
   rSize00() {
     return 0.0;
   }
 
+  hrSize001() {
+    return _maxHeight * 0.001;
+  }
+
+  hrSize002() {
+    return _maxHeight * 0.002;
+  }
+
+  hrSize003() {
+    return _maxHeight * 0.003;
+  }
+
+  hrSize004() {
+    return _maxHeight * 0.004;
+  }
+
+  hrSize005() {
+    return _maxHeight * 0.005;
+  }
+
+  hrSize006() {
+    return _maxHeight * 0.006;
+  }
+
+  hrSize007() {
+    return _maxHeight * 0.007;
+  }
+
+  hrSize008() {
+    return _maxHeight * 0.008;
+  }
+
+  hrSize009() {
+    return _maxHeight * 0.009;
+  }
+
   hrSize01() {
-    return maxHeight * 0.01;
+    return _maxHeight * 0.01;
   }
 
   hrSize02() {
-    return maxHeight * 0.02;
+    return _maxHeight * 0.02;
   }
 
   hrSize03() {
-    return maxHeight * 0.03;
+    return _maxHeight * 0.03;
   }
 
   hrSize04() {
-    return maxHeight * 0.04;
+    return _maxHeight * 0.04;
   }
 
   hrSize05() {
-    return maxHeight * 0.05;
+    return _maxHeight * 0.05;
   }
 
   hrSize06() {
-    return maxHeight * 0.06;
+    return _maxHeight * 0.06;
   }
 
   hrSize07() {
-    return maxHeight * 0.07;
+    return _maxHeight * 0.07;
   }
 
   hrSize08() {
-    return maxHeight * 0.08;
+    return _maxHeight * 0.08;
   }
 
   hrSize09() {
-    return maxHeight * 0.09;
+    return _maxHeight * 0.09;
   }
 
   hrSize10() {
-    return maxHeight * 0.1;
+    return _maxHeight * 0.1;
   }
 
   hrSize11() {
-    return maxHeight * 0.11;
+    return _maxHeight * 0.11;
   }
 
   hrSize12() {
-    return maxHeight * 0.12;
+    return _maxHeight * 0.12;
   }
 
   hrSize13() {
-    return maxHeight * 0.13;
+    return _maxHeight * 0.13;
   }
 
   hrSize14() {
-    return maxHeight * 0.14;
+    return _maxHeight * 0.14;
   }
 
   hrSize15() {
-    return maxHeight * 0.15;
+    return _maxHeight * 0.15;
   }
 
   hrSize16() {
-    return maxHeight * 0.16;
+    return _maxHeight * 0.16;
   }
 
   hrSize17() {
-    return maxHeight * 0.17;
+    return _maxHeight * 0.17;
   }
 
   hrSize18() {
-    return maxHeight * 0.18;
+    return _maxHeight * 0.18;
   }
 
   hrSize19() {
-    return maxHeight * 0.19;
+    return _maxHeight * 0.19;
   }
 
   hrSize20() {
-    return maxHeight * 0.2;
+    return _maxHeight * 0.2;
   }
 
   hrSize21() {
-    return maxHeight * 0.21;
+    return _maxHeight * 0.21;
   }
 
   hrSize22() {
-    return maxHeight * 0.22;
+    return _maxHeight * 0.22;
   }
 
   hrSize23() {
-    return maxHeight * 0.23;
+    return _maxHeight * 0.23;
   }
 
   hrSize24() {
-    return maxHeight * 0.24;
+    return _maxHeight * 0.24;
   }
 
   hrSize25() {
-    return maxHeight * 0.25;
+    return _maxHeight * 0.25;
   }
 
   hrSize26() {
-    return maxHeight * 0.26;
+    return _maxHeight * 0.26;
   }
 
   hrSize27() {
-    return maxHeight * 0.27;
+    return _maxHeight * 0.27;
   }
 
   hrSize28() {
-    return maxHeight * 0.28;
+    return _maxHeight * 0.28;
   }
 
   hrSize29() {
-    return maxHeight * 0.29;
+    return _maxHeight * 0.29;
   }
 
   hrSize30() {
-    return maxHeight * 0.3;
+    return _maxHeight * 0.3;
   }
 
   hrSize31() {
-    return maxHeight * 0.31;
+    return _maxHeight * 0.31;
   }
 
   hrSize32() {
-    return maxHeight * 0.32;
+    return _maxHeight * 0.32;
   }
 
   hrSize33() {
-    return maxHeight * 0.33;
+    return _maxHeight * 0.33;
   }
 
   hrSize34() {
-    return maxHeight * 0.34;
+    return _maxHeight * 0.34;
   }
 
   hrSize35() {
-    return maxHeight * 0.35;
+    return _maxHeight * 0.35;
   }
 
   hrSize36() {
-    return maxHeight * 0.36;
+    return _maxHeight * 0.36;
   }
 
   hrSize37() {
-    return maxHeight * 0.37;
+    return _maxHeight * 0.37;
   }
 
   hrSize38() {
-    return maxHeight * 0.38;
+    return _maxHeight * 0.38;
   }
 
   hrSize39() {
-    return maxHeight * 0.3;
+    return _maxHeight * 0.3;
   }
 
   hrSize40() {
-    return maxHeight * 0.4;
+    return _maxHeight * 0.4;
   }
 
   hrSize41() {
-    return maxHeight * 0.41;
+    return _maxHeight * 0.41;
   }
 
   hrSize42() {
-    return maxHeight * 0.42;
+    return _maxHeight * 0.42;
   }
 
   hrSize43() {
-    return maxHeight * 0.43;
+    return _maxHeight * 0.43;
   }
 
   hrSize44() {
-    return maxHeight * 0.44;
+    return _maxHeight * 0.44;
   }
 
   hrSize45() {
-    return maxHeight * 0.45;
+    return _maxHeight * 0.45;
   }
 
   hrSize46() {
-    return maxHeight * 0.46;
+    return _maxHeight * 0.46;
   }
 
   hrSize47() {
-    return maxHeight * 0.47;
+    return _maxHeight * 0.47;
   }
 
   hrSize48() {
-    return maxHeight * 0.48;
+    return _maxHeight * 0.48;
   }
 
   hrSize49() {
-    return maxHeight * 0.49;
+    return _maxHeight * 0.49;
   }
 
   hrSize50() {
-    return maxHeight * 0.5;
+    return _maxHeight * 0.5;
   }
 
   //width
