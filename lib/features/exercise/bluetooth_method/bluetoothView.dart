@@ -1,4 +1,3 @@
-import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
 import 'package:besports_v5/constants/sizes.dart';
@@ -184,7 +183,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                     Padding(
                       padding: EdgeInsets.fromLTRB(
                         s.wrSize05(), //left
-                        s.rSize00(), //top
+                        s.hrSize015(), //top
                         s.wrSize05(), //right
                         s.rSize00(), //bottom
                       ),
