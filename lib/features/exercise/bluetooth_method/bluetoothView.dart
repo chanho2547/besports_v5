@@ -84,7 +84,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       isDismissible: true, // 바텀 시트 외부를 탭하면 바텀 시트가 닫힙니다.
       builder: (context) {
         return Container(
-          height: s._maxHeight,
+          height: s.maxHeight(),
           color: Colors.white, // 백그라운드 색상을 흰색으로 설정
           child: Center(
               child: StreamBuilder<int>(
@@ -162,130 +162,132 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
     g = RGaps(
         MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned(
-            top: s.rSize00(),
-            left: s.rSize00(),
-            right: s.rSize00(),
-            bottom: s.rSize00(),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade800,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(15),
-                  bottomRight: Radius.circular(15),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      s.wrSize05(), //left
-                      s.rSize00(), //top
-                      s.wrSize05(), //right
-                      s.rSize00(), //bottom
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            // 뒤로가기 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
-                            BluetoothViewModel.setCount = 4;
-                            viewModel?.disconnect();
-                            viewModel?.dispose();
-                            Navigator.pop(context);
-                          },
-                        ),
-                        SizedBox(
-                          width: s.wrSize10(),
-                          height: s.wrSize10(),
-                          child: Image.asset("Images/logo_white.png"),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.more_vert,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            // ... 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
-                            _showSetCountPicker();
-                          },
-                        ),
-                      ],
-                    ),
+    return SafeArea(
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Positioned(
+              top: s.rSize00(),
+              left: s.rSize00(),
+              right: s.rSize00(),
+              bottom: s.rSize00(),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade800,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(15),
+                    bottomRight: Radius.circular(15),
                   ),
-                  g.vr12(),
-                  Container(
-                    child: ValueListenableBuilder<String>(
-                      valueListenable: viewModel!.receivedDataNotifier,
-                      builder: (context, receivedData, _) => Center(
-                        child: Text(
-                          "${receivedData.replaceAll("\$r", '').replaceAll(';', '')} KG",
-                          textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
-                          style: const TextStyle(
-                            fontSize: Sizes.size52,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        s.wrSize05(), //left
+                        s.rSize00(), //top
+                        s.wrSize05(), //right
+                        s.rSize00(), //bottom
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              // 뒤로가기 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
+                              BluetoothViewModel.setCount = 4;
+                              viewModel?.disconnect();
+                              viewModel?.dispose();
+                              Navigator.pop(context);
+                            },
+                          ),
+                          SizedBox(
+                            width: s.wrSize10(),
+                            height: s.wrSize10(),
+                            child: Image.asset("Images/logo_white.png"),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.more_vert,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              // ... 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
+                              _showSetCountPicker();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    g.vr12(),
+                    Container(
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: viewModel!.receivedDataNotifier,
+                        builder: (context, receivedData, _) => Center(
+                          child: Text(
+                            "${receivedData.replaceAll("\$r", '').replaceAll(';', '')} KG",
+                            textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
+                            style: const TextStyle(
+                              fontSize: Sizes.size52,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  g.vr05(),
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        AnimatedBuilder(
-                          animation: _animationController,
-                          builder: (context, child) {
-                            return Transform.scale(
-                              scale: _pulseAnimation.value,
-                              child: Container(
-                                padding: const EdgeInsets.all(15.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: const Color(0xFF373737), // 초록색 띠
-                                  border: Border.all(
-                                    color: Colors.grey.shade100,
-                                    width: Sizes.size7,
+                    g.vr05(),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          AnimatedBuilder(
+                            animation: _animationController,
+                            builder: (context, child) {
+                              return Transform.scale(
+                                scale: _pulseAnimation.value,
+                                child: Container(
+                                  padding: const EdgeInsets.all(15.0),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: const Color(0xFF373737), // 초록색 띠
+                                    border: Border.all(
+                                      color: Colors.grey.shade100,
+                                      width: Sizes.size7,
+                                    ),
                                   ),
+                                  child: child,
                                 ),
-                                child: child,
-                              ),
-                            );
-                          },
-                          child: ValueListenableBuilder<int>(
-                            valueListenable: viewModel!.countNotifier,
-                            builder: (context, count, _) => Text(
-                              '$count',
-                              style: const TextStyle(
-                                fontSize: 100,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                              );
+                            },
+                            child: ValueListenableBuilder<int>(
+                              valueListenable: viewModel!.countNotifier,
+                              builder: (context, count, _) => Text(
+                                '$count',
+                                style: const TextStyle(
+                                  fontSize: 100,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        g.vr05(), // 간격을 주기 위한 코드
-                        Text(_setMessage,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 40)),
-                      ],
+                          g.vr05(), // 간격을 주기 위한 코드
+                          Text(_setMessage,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 40)),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

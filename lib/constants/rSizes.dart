@@ -1,8 +1,16 @@
 class RSizes {
   late final double _maxHeight;
-  late final double maxWidth;
+  late final double _maxWidth;
 
-  RSizes(this._maxHeight, this.maxWidth);
+  RSizes(this._maxHeight, this._maxWidth);
+
+  maxHeight() {
+    return _maxHeight;
+  }
+
+  maxWidth() {
+    return _maxWidth;
+  }
 
   rSize00() {
     return 0.0;
@@ -48,36 +56,136 @@ class RSizes {
     return _maxHeight * 0.01;
   }
 
+  hrSize011() {
+    return _maxHeight * 0.011;
+  }
+
+  hrSize012() {
+    return _maxHeight * 0.012;
+  }
+
+  hrSize013() {
+    return _maxHeight * 0.013;
+  }
+
+  hrSize014() {
+    return _maxHeight * 0.014;
+  }
+
+  hrSize015() {
+    return _maxHeight * 0.015;
+  }
+
+  hrSize016() {
+    return _maxHeight * 0.016;
+  }
+
+  hrSize017() {
+    return _maxHeight * 0.017;
+  }
+
+  hrSize018() {
+    return _maxHeight * 0.018;
+  }
+
+  hrSize019() {
+    return _maxHeight * 0.019;
+  }
+
   hrSize02() {
     return _maxHeight * 0.02;
+  }
+
+  hrSize021() {
+    return _maxHeight * 0.021;
+  }
+
+  hrSize022() {
+    return _maxHeight * 0.022;
+  }
+
+  hrSize023() {
+    return _maxHeight * 0.023;
+  }
+
+  hrSize024() {
+    return _maxHeight * 0.024;
+  }
+
+  hrSize025() {
+    return _maxHeight * 0.025;
+  }
+
+  hrSize026() {
+    return _maxHeight * 0.026;
+  }
+
+  hrSize027() {
+    return _maxHeight * 0.027;
+  }
+
+  hrSize028() {
+    return _maxHeight * 0.028;
+  }
+
+  hrSize029() {
+    return _maxHeight * 0.029;
   }
 
   hrSize03() {
     return _maxHeight * 0.03;
   }
 
+  hrSize035() {
+    return _maxHeight * 0.035;
+  }
+
   hrSize04() {
     return _maxHeight * 0.04;
+  }
+
+  hrSize045() {
+    return _maxHeight * 0.045;
   }
 
   hrSize05() {
     return _maxHeight * 0.05;
   }
 
+  hrSize055() {
+    return _maxHeight * 0.055;
+  }
+
   hrSize06() {
     return _maxHeight * 0.06;
+  }
+
+  hrSize065() {
+    return _maxHeight * 0.065;
   }
 
   hrSize07() {
     return _maxHeight * 0.07;
   }
 
+  hrSize075() {
+    return _maxHeight * 0.075;
+  }
+
   hrSize08() {
     return _maxHeight * 0.08;
   }
 
+  hrSize085() {
+    return _maxHeight * 0.085;
+  }
+
   hrSize09() {
     return _maxHeight * 0.09;
+  }
+
+  hrSize095() {
+    return _maxHeight * 0.095;
   }
 
   hrSize10() {
@@ -244,204 +352,364 @@ class RSizes {
     return _maxHeight * 0.5;
   }
 
+  hrSize60() {
+    return _maxHeight * 0.6;
+  }
+
+  hrSize70() {
+    return _maxHeight * 0.7;
+  }
+
+  hrSize75() {
+    return _maxHeight * 0.75;
+  }
+
+  hrSize78() {
+    return _maxHeight * 0.78;
+  }
+
+  hrSize80() {
+    return _maxHeight * 0.8;
+  }
+
+  hrSize90() {
+    return _maxHeight * 0.9;
+  }
+
   //width
+  wrSize001() {
+    return _maxWidth * 0.001;
+  }
+
+  wrSize002() {
+    return _maxWidth * 0.002;
+  }
+
+  wrSize003() {
+    return _maxWidth * 0.003;
+  }
+
+  wrSize004() {
+    return _maxWidth * 0.004;
+  }
+
+  wrSize005() {
+    return _maxWidth * 0.005;
+  }
+
+  wrSize006() {
+    return _maxWidth * 0.006;
+  }
+
+  wrSize007() {
+    return _maxWidth * 0.007;
+  }
+
+  wrSize008() {
+    return _maxWidth * 0.008;
+  }
+
+  wrSize009() {
+    return _maxWidth * 0.009;
+  }
+
   wrSize01() {
-    return maxWidth * 0.01;
+    return _maxWidth * 0.01;
+  }
+
+  wrSize011() {
+    return _maxWidth * 0.011;
+  }
+
+  wrSize012() {
+    return _maxWidth * 0.012;
+  }
+
+  wrSize013() {
+    return _maxWidth * 0.013;
+  }
+
+  wrSize014() {
+    return _maxWidth * 0.014;
+  }
+
+  wrSize015() {
+    return _maxWidth * 0.015;
+  }
+
+  wrSize016() {
+    return _maxWidth * 0.016;
+  }
+
+  wrSize017() {
+    return _maxWidth * 0.017;
+  }
+
+  wrSize018() {
+    return _maxWidth * 0.018;
+  }
+
+  wrSize019() {
+    return _maxWidth * 0.019;
   }
 
   wrSize02() {
-    return maxWidth * 0.02;
+    return _maxWidth * 0.02;
+  }
+
+  wrSize021() {
+    return _maxWidth * 0.021;
+  }
+
+  wrSize022() {
+    return _maxWidth * 0.022;
+  }
+
+  wrSize023() {
+    return _maxWidth * 0.023;
+  }
+
+  wrSize024() {
+    return _maxWidth * 0.024;
+  }
+
+  wrSize025() {
+    return _maxWidth * 0.025;
+  }
+
+  wrSize026() {
+    return _maxWidth * 0.026;
+  }
+
+  wrSize027() {
+    return _maxWidth * 0.027;
+  }
+
+  wrSize028() {
+    return _maxWidth * 0.028;
+  }
+
+  wrSize029() {
+    return _maxWidth * 0.029;
   }
 
   wrSize03() {
-    return maxWidth * 0.03;
+    return _maxWidth * 0.03;
+  }
+
+  wrSize035() {
+    return _maxWidth * 0.035;
   }
 
   wrSize04() {
-    return maxWidth * 0.04;
+    return _maxWidth * 0.04;
+  }
+
+  wrSize045() {
+    return _maxWidth * 0.045;
   }
 
   wrSize05() {
-    return maxWidth * 0.05;
+    return _maxWidth * 0.05;
+  }
+
+  wrSize055() {
+    return _maxWidth * 0.055;
   }
 
   wrSize06() {
-    return maxWidth * 0.06;
+    return _maxWidth * 0.06;
+  }
+
+  wrSize065() {
+    return _maxWidth * 0.065;
   }
 
   wrSize07() {
-    return maxWidth * 0.07;
+    return _maxWidth * 0.07;
+  }
+
+  wrSize075() {
+    return _maxWidth * 0.075;
   }
 
   wrSize08() {
-    return maxWidth * 0.08;
+    return _maxWidth * 0.08;
+  }
+
+  wrSize085() {
+    return _maxWidth * 0.085;
   }
 
   wrSize09() {
-    return maxWidth * 0.09;
+    return _maxWidth * 0.09;
+  }
+
+  wrSize095() {
+    return _maxWidth * 0.095;
   }
 
   wrSize10() {
-    return maxWidth * 0.1;
+    return _maxWidth * 0.1;
   }
 
   wrSize11() {
-    return maxWidth * 0.11;
+    return _maxWidth * 0.11;
   }
 
   wrSize12() {
-    return maxWidth * 0.12;
+    return _maxWidth * 0.12;
   }
 
   wrSize13() {
-    return maxWidth * 0.13;
+    return _maxWidth * 0.13;
   }
 
   wrSize14() {
-    return maxWidth * 0.14;
+    return _maxWidth * 0.14;
   }
 
   wrSize15() {
-    return maxWidth * 0.15;
+    return _maxWidth * 0.15;
   }
 
   wrSize16() {
-    return maxWidth * 0.16;
+    return _maxWidth * 0.16;
   }
 
   wrSize17() {
-    return maxWidth * 0.17;
+    return _maxWidth * 0.17;
   }
 
   wrSize18() {
-    return maxWidth * 0.18;
+    return _maxWidth * 0.18;
   }
 
   wrSize19() {
-    return maxWidth * 0.19;
+    return _maxWidth * 0.19;
   }
 
   wrSize20() {
-    return maxWidth * 0.2;
+    return _maxWidth * 0.2;
   }
 
   wrSize21() {
-    return maxWidth * 0.21;
+    return _maxWidth * 0.21;
   }
 
   wrSize22() {
-    return maxWidth * 0.22;
+    return _maxWidth * 0.22;
   }
 
   wrSize23() {
-    return maxWidth * 0.23;
+    return _maxWidth * 0.23;
   }
 
   wrSize24() {
-    return maxWidth * 0.24;
+    return _maxWidth * 0.24;
   }
 
   wrSize25() {
-    return maxWidth * 0.25;
+    return _maxWidth * 0.25;
   }
 
   wrSize26() {
-    return maxWidth * 0.26;
+    return _maxWidth * 0.26;
   }
 
   wrSize27() {
-    return maxWidth * 0.27;
+    return _maxWidth * 0.27;
   }
 
   wrSize28() {
-    return maxWidth * 0.28;
+    return _maxWidth * 0.28;
   }
 
   wrSize29() {
-    return maxWidth * 0.29;
+    return _maxWidth * 0.29;
   }
 
   wrSize30() {
-    return maxWidth * 0.3;
+    return _maxWidth * 0.3;
   }
 
   wrSize31() {
-    return maxWidth * 0.31;
+    return _maxWidth * 0.31;
   }
 
   wrSize32() {
-    return maxWidth * 0.32;
+    return _maxWidth * 0.32;
   }
 
   wrSize33() {
-    return maxWidth * 0.33;
+    return _maxWidth * 0.33;
   }
 
   wrSize34() {
-    return maxWidth * 0.34;
+    return _maxWidth * 0.34;
   }
 
   wrSize35() {
-    return maxWidth * 0.35;
+    return _maxWidth * 0.35;
   }
 
   wrSize36() {
-    return maxWidth * 0.36;
+    return _maxWidth * 0.36;
   }
 
   wrSize37() {
-    return maxWidth * 0.37;
+    return _maxWidth * 0.37;
   }
 
   wrSize38() {
-    return maxWidth * 0.38;
+    return _maxWidth * 0.38;
   }
 
   wrSize39() {
-    return maxWidth * 0.3;
+    return _maxWidth * 0.3;
   }
 
   wrSize40() {
-    return maxWidth * 0.4;
+    return _maxWidth * 0.4;
   }
 
   wrSize41() {
-    return maxWidth * 0.41;
+    return _maxWidth * 0.41;
   }
 
   wrSize42() {
-    return maxWidth * 0.42;
+    return _maxWidth * 0.42;
   }
 
   wrSize43() {
-    return maxWidth * 0.43;
+    return _maxWidth * 0.43;
   }
 
   wrSize44() {
-    return maxWidth * 0.44;
+    return _maxWidth * 0.44;
   }
 
   wrSize45() {
-    return maxWidth * 0.45;
+    return _maxWidth * 0.45;
   }
 
   wrSize46() {
-    return maxWidth * 0.46;
+    return _maxWidth * 0.46;
   }
 
   wrSize47() {
-    return maxWidth * 0.47;
+    return _maxWidth * 0.47;
   }
 
   wrSize48() {
-    return maxWidth * 0.48;
+    return _maxWidth * 0.48;
   }
 
   wrSize49() {
-    return maxWidth * 0.49;
+    return _maxWidth * 0.49;
   }
 
   wrSize50() {
-    return maxWidth * 0.5;
+    return _maxWidth * 0.5;
   }
 }
