@@ -1,6 +1,14 @@
 import 'package:besports_v5/constants/custom_colors.dart';
 import 'package:besports_v5/constants/sizes.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+
+import 'functions/_date_picker.dart';
+import 'Screens/overview_screen.dart';
+import 'Screens/graph1_screen.dart';
+import 'Screens/graph2_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -12,10 +20,13 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int calorie = 432;
   late ScrollController _scrollController;
   final DateTime _baseDate = DateTime.now();
   int _currentIndex = 2;
+  int dates_count = 5;
+  DateTime _startDate = DateTime.utc(2022, 2, 8);
+
+  double _selectedOffset = 0.0;
 
   @override
   void initState() {
@@ -32,28 +43,78 @@ class _DashboardScreenState extends State<DashboardScreen> {
           });
   }
 
-  String _monthToString(int month) {
-    List<String> monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return monthNames[month - 1];
+  void _showDatePicker(BuildContext context) {
+    DatePicker.showDatePicker(
+      context,
+      _startDate,
+      (DateTime newDate) {
+        setState(() {
+          _startDate = newDate;
+        });
+      },
+      "Select Workout",
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final double appHeight = MediaQuery.of(context).size.height;
     final double appWidth = MediaQuery.of(context).size.width;
+    String startDate = DateFormat('yyyy. MM. dd').format(_startDate);
+    Duration difference = _baseDate.difference(_startDate);
+    String dDay = difference.inDays + 1 > 0
+        ? "+${difference.inDays + 1}"
+        : "${difference.inDays + 1}";
+
+    Widget _buildTab(
+        int index, String title, double appHeight, double appWidth) {
+      bool isSelected = _currentIndex == index;
+
+      return GestureDetector(
+        onTap: () {
+          setState(() {
+            _currentIndex = index;
+            _selectedOffset = appWidth * 0.30 * index;
+          });
+        },
+        child: AnimatedContainer(
+          width: appWidth * 0.305,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.green : Colors.transparent,
+            borderRadius: BorderRadius.circular(5), // 둥근 모서리를 위해 추가
+            border: isSelected
+                ? Border.all(color: Colors.green, width: 2.0)
+                : null, // 선택된 항목에만 둥근 직사각형 테두리 추가
+          ),
+          child: Center(
+            child: Text(
+              title,
+              style: TextStyle(
+                color:
+                    isSelected ? Colors.white : Colors.black.withOpacity(0.5),
+                fontSize: appHeight * 0.02,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    Widget _buildCurrentScreen() {
+      switch (_currentIndex) {
+        case 0:
+          return const OverviewScreen();
+        case 1:
+          return const Graph1Screen();
+        case 2:
+          return Graph2Screen();
+        default:
+          return const OverviewScreen(); // Default to Overview screen
+      }
+    }
 
     return SafeArea(
       child: Scaffold(
@@ -90,12 +151,96 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           SizedBox(
                             height: appHeight * 0.02,
                           ),
-                          Text(
-                            'Dashboard',
-                            style: TextStyle(
-                              color: custom_colors.txtLightBlack,
-                              fontSize: appHeight * 0.028,
-                              fontWeight: FontWeight.w600,
+                          Row(
+                            children: [
+                              Text(
+                                'You are ',
+                                style: TextStyle(
+                                  color: custom_colors.txtBlack,
+                                  fontSize: appHeight * 0.028,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              Text(
+                                'D$dDay',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: appHeight * 0.028,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              Text(
+                                ' with ',
+                                style: TextStyle(
+                                  color: custom_colors.txtBlack,
+                                  fontSize: appHeight * 0.028,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              Text(
+                                'BESPORTS',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: appHeight * 0.028,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: appHeight * 0.01,
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: appWidth * 0.02),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "since",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: appHeight * 0.02,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              SizedBox(
+                                width: appWidth * 0.01,
+                              ),
+                              Text(
+                                startDate,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: appHeight * 0.02,
+                                  color: Colors.green,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () => _showDatePicker(context),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: appWidth * 0.005,
+                                  horizontal: appHeight * 0.01),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: custom_colors.txtBlack,
+                              ),
+                              child: const Text(
+                                'new start date',
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.white,
+                                    fontStyle: FontStyle.italic),
+                              ),
                             ),
                           ),
                         ],
@@ -105,9 +250,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       height: appHeight * 0.036,
                     ),
                     Container(
-                      height: appHeight * 0.08,
+                      height: appHeight * 0.05,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(5),
                         color: Colors.white,
                         boxShadow: [
                           BoxShadow(
@@ -117,140 +262,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ],
                       ),
-                      child: PageView.builder(
-                        controller: PageController(
-                            viewportFraction: 0.2, initialPage: _currentIndex),
-                        scrollDirection: Axis.horizontal,
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentIndex = index;
-                          });
-                        },
-                        itemBuilder: (context, index) {
-                          DateTime currentDate =
-                              _baseDate.add(Duration(days: index - 2));
-
-                          double opacity = (index == _currentIndex) ? 1.0 : 0.2;
-
-                          return Opacity(
-                            opacity: opacity,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "${currentDate.day}",
-                                    style: TextStyle(
-                                        fontSize:
-                                            appHeight * 0.001 * Sizes.size24,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    _monthToString(currentDate.month),
-                                    style: TextStyle(
-                                        fontSize:
-                                            appHeight * 0.001 * Sizes.size18,
-                                        fontWeight: FontWeight.normal),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildTab(0, "Overview", appHeight, appWidth),
+                          _buildTab(1, "Graph1", appHeight, appWidth),
+                          _buildTab(2, "Graph2", appHeight, appWidth),
+                        ],
                       ),
                     ),
                     SizedBox(
-                      height: appHeight * 0.032,
+                      height: appHeight * 0.01,
                     ),
-                    Container(
-                      height: appHeight * 0.56,
-                      width: appWidth,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            offset: const Offset(0, 5),
-                            blurRadius: 10,
-                          ),
-                        ],
-                      ),
+                    SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: appHeight * 0.06,
-                                horizontal: appWidth * 0.06),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '$calorie Kcal',
-                                  style: TextStyle(
-                                    fontSize: appHeight * 0.035,
-                                    fontWeight: FontWeight.w400,
-                                    color: custom_colors.kcalGrey,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: appHeight * 0.02,
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.circle,
-                                      color: custom_colors.kcalGrey,
-                                      size: appHeight * 0.01,
-                                    ),
-                                    SizedBox(
-                                      width: appWidth * 0.01,
-                                    ),
-                                    Text(
-                                      '섭취량',
-                                      style: TextStyle(
-                                          fontSize: appHeight * 0.01,
-                                          fontWeight: FontWeight.w200,
-                                          color: custom_colors.kcalGrey),
-                                    ),
-                                    SizedBox(
-                                      width: appWidth * 0.1,
-                                    ),
-                                    Icon(
-                                      Icons.circle,
-                                      color: custom_colors.kcalGrey,
-                                      size: appHeight * 0.01,
-                                    ),
-                                    SizedBox(
-                                      width: appWidth * 0.01,
-                                    ),
-                                    Text(
-                                      '운동량',
-                                      style: TextStyle(
-                                          fontSize: appHeight * 0.01,
-                                          fontWeight: FontWeight.w200,
-                                          color: custom_colors.kcalGrey),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: appHeight * 0.035,
-                                ),
-                                Center(
-                                  child: Image.asset(
-                                    'Images/Graph.png',
-                                    width: appWidth,
-                                    height: appHeight * 0.323,
-                                    fit: BoxFit.fill,
-                                  ),
+                          Container(
+                            height: appHeight * 0.56,
+                            width: appWidth,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  offset: const Offset(0, 5),
+                                  blurRadius: 10,
                                 ),
                               ],
                             ),
-                          )
+                            child:
+                                _buildCurrentScreen(), // Display the selected screen
+                          ),
                         ],
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),

@@ -161,8 +161,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
             // 세 번째 화면 (두 번째 화면 위에 쌓는다)
             AnimatedPositioned(
-              duration: const Duration(milliseconds: 250),
-              top: isDetailsOnTop ? appHeight * 0.78 : appHeight * 0.15,
+              duration: const Duration(milliseconds: 300),
+              top: isDetailsOnTop ? appHeight * 0.73 : appHeight * 0.15,
               left: 0,
               right: 0,
               child: GestureDetector(
@@ -199,27 +199,34 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             SizedBox(
                               height: appHeight * 0.01,
                             ),
-                            Text(
-                              'Run Time : $hours시간 $remainingMinutes분',
-                              style: TextStyle(
-                                fontSize: appHeight * 0.015,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              'Carlorie : $calorie Kcal',
-                              style: TextStyle(
-                                fontSize: appHeight * 0.015,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
+                            Visibility(
+                              visible: !isDetailsOnTop,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Run Time : $hours시간 $remainingMinutes분',
+                                    style: TextStyle(
+                                      fontSize: appHeight * 0.015,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Carlorie : $calorie Kcal',
+                                    style: TextStyle(
+                                      fontSize: appHeight * 0.015,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
                       SizedBox(
-                        height: appHeight * 0.05,
+                        height: appHeight * 0.02,
                       ),
                       Stack(
                         children: [
