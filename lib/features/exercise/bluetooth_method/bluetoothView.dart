@@ -1,3 +1,6 @@
+import 'package:besports_v5/constants/gaps.dart';
+import 'package:besports_v5/constants/rGaps.dart';
+import 'package:besports_v5/constants/rSizes.dart';
 import 'package:besports_v5/constants/sizes.dart';
 import 'package:besports_v5/router.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +24,8 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   late AnimationController _animationController;
   late Animation<double> _pulseAnimation;
 
-  double maxHeight = 0.0;
-  double maxWidth = 0.0;
+  late RSizes s;
+  late RGaps g;
 
   String _setMessage = "START!!"; // 초기 메시지는 빈 문자열
 
@@ -81,7 +84,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       isDismissible: true, // 바텀 시트 외부를 탭하면 바텀 시트가 닫힙니다.
       builder: (context) {
         return Container(
-          height: maxHeight,
+          height: s.maxHeight,
           color: Colors.white, // 백그라운드 색상을 흰색으로 설정
           child: Center(
               child: StreamBuilder<int>(
@@ -117,7 +120,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
         context: context,
         builder: (context) {
           return Container(
-            height: maxHeight * 0.25, // 화면의 1/4 높이
+            height: s.hrSize25(), // 화면의 1/4 높이
             color: Colors.white,
             child: ListView.builder(
               itemCount: 10, // 이곳에서 원하는 setCount 범위를 설정하세요
@@ -154,16 +157,19 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   @override
   Widget build(BuildContext context) {
-    maxWidth = MediaQuery.of(context).size.width;
-    maxHeight = MediaQuery.of(context).size.height;
+    s = RSizes(
+        MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
+
+    g = RGaps(
+        MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
     return Scaffold(
       body: Stack(
         children: [
           Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: maxHeight * 0,
+            top: s.rSize00(),
+            left: s.rSize00(),
+            right: s.rSize00(),
+            bottom: s.rSize00(),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.grey.shade800,
@@ -176,10 +182,10 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                 children: [
                   Padding(
                     padding: EdgeInsets.fromLTRB(
-                      maxWidth * 0.05, //left
-                      maxHeight * 0, //top
-                      maxWidth * 0.05, //right
-                      maxHeight * 0, //bottom
+                      s.wrSize05(), //left
+                      s.rSize00(), //top
+                      s.wrSize05(), //right
+                      s.rSize00(), //bottom
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -198,8 +204,8 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                           },
                         ),
                         SizedBox(
-                          width: maxWidth * 0.15,
-                          height: maxHeight * 0.15,
+                          width: s.wrSize10(),
+                          height: s.wrSize10(),
                           child: Image.asset("Images/logo_white.png"),
                         ),
                         IconButton(
@@ -215,9 +221,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: maxHeight * 0.12,
-                  ),
+                  g.vr12(),
                   Container(
                     child: ValueListenableBuilder<String>(
                       valueListenable: viewModel!.receivedDataNotifier,
@@ -234,9 +238,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: maxHeight * 0.05,
-                  ),
+                  g.vr05(),
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -272,7 +274,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             ),
                           ),
                         ),
-                        SizedBox(height: maxHeight * 0.05), // 간격을 주기 위한 코드
+                        g.vr05(), // 간격을 주기 위한 코드
                         Text(_setMessage,
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 40)),
