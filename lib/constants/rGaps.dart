@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 
+// 사용법:
+// 1. class 상단에 late키워드로 객체변수 임의로 g를 선언
+// 2. builder내에서 g = RGaps(MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
+// 3. 세로로 1/10만큼 SizedBox를 사용하고 싶을 경우, g.vr10()을 수식
+// 4. 가로로 1/10만큼 SizedBox를 사용하고 싶을 경우, g.hr10()을 수식
+
 class RGaps {
   late final double _maxHeight;
   late final double _maxWidth;
   RGaps(this._maxHeight, this._maxWidth);
+
   // Vertical Gaps
   vr001() {
     return SizedBox(height: _maxHeight * 0.001);

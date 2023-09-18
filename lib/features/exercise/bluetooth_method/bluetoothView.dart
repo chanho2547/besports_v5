@@ -1,3 +1,4 @@
+import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
 import 'package:besports_v5/constants/sizes.dart';
@@ -54,12 +55,12 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       if (viewModel!.countNotifier.value == 0) {
         _showRestTimeSheet();
         setState(() {
-          BluetoothViewModel.setCount--;
-          _setMessage = "${BluetoothViewModel.setCount} SET 남음";
+          viewModel?.plusSetCount(-1);
+          _setMessage = "${viewModel?.getSetCount()} SET 남음";
 
-          if (BluetoothViewModel.setCount == 0) {
+          if (viewModel?.getSetCount() == 0) {
             _setMessage = "운동 종료";
-            BluetoothViewModel.setCount = 3;
+            viewModel?.setCountSet(3);
             viewModel!.disconnect();
             _navigateToHome();
           }
@@ -69,7 +70,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   }
 
   void _showRestTimeSheet() async {
-    viewModel?.enterRestState();
+    viewModel?.setRestState(true);
     int start = 5;
 
     // 시간이 변화할 때마다 이 Stream에서 이벤트를 내보냅니다.
@@ -92,7 +93,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
             builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 Future.delayed(Duration.zero, () {
-                  viewModel?.exitRestState();
+                  viewModel?.setRestState(false);
                   Navigator.of(context).pop(); // 바텀 시트를 닫습니다.
                 });
               }
@@ -128,7 +129,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                   title: Text('Set ${index + 1}'),
                   onTap: () {
                     setState(() {
-                      BluetoothViewModel.setCount = index + 1;
+                      viewModel?.setCountSet(index + 1);
                     });
                     Navigator.pop(context);
                   },
@@ -148,14 +149,15 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     print("0초 지남, 홈 화면으로 이동 시도중");
     //goRouter.go("/home");
     HapticFeedback.lightImpact(); // 햅틱 피드백 호출
-    BluetoothViewModel.setCount = 4;
-    viewModel?.disconnect();
+    viewModel?.setCountSet(4);
     viewModel?.dispose();
+    print("viewModel.dispose");
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    //size
     s = RSizes(
         MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
 
@@ -197,7 +199,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             ),
                             onPressed: () {
                               // 뒤로가기 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
-                              BluetoothViewModel.setCount = 4;
+                              viewModel?.setCountSet(4);
                               viewModel?.disconnect();
                               viewModel?.dispose();
                               Navigator.pop(context);

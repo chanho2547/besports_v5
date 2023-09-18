@@ -1,6 +1,11 @@
 class RSizes {
   late final double _maxHeight;
   late final double _maxWidth;
+  // 사용법:
+  // 1. class 상단에 late키워드로 객체변수 임의로 s를 선언 ex: late RSizes s;
+  // 2. builder내에서 s = RGaps(MediaQuery.of(context).size.height, MediaQuery.of(context).size.width); 로 객체 초기화
+  // 3. 세로로 1/10만큼 길이를 사용하고 싶으면, s.hrSize10() 수식.
+  // 4. 가로로 1/10만큼 길이를 사용하고 싶으면, s.wrSize10() 수식.
 
   RSizes(this._maxHeight, this._maxWidth);
 

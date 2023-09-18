@@ -12,8 +12,11 @@ class BluetoothViewModel {
   final Set<String> connectedDevices = {};
   StreamSubscription? _scanSubscription;
   Timer? _debounceTimer;
-  static int setCount = 4;
+  int setCount = 4;
   bool isRest = false;
+
+  static final List<int> byte = utf8.encode("\$wr;");
+
   ValueNotifier<String> receivedDataNotifier = ValueNotifier<String>("");
 
   NavigationCallback? onNavigateToHome;
@@ -21,6 +24,9 @@ class BluetoothViewModel {
   StreamSubscription? _connectionSubscription;
 
   BluetoothViewModel({required this.deviceAddr});
+
+  late final QualifiedCharacteristic _charToSubscribe;
+  late QualifiedCharacteristic _charToWrite;
 
   bool isPaused = false; // 카운트 일시 중지 상태
 
@@ -57,19 +63,25 @@ class BluetoothViewModel {
       for (final characteristic in service.characteristics) {
         if (characteristic.isNotifiable) {
           // 알림 활성화
-          final charToSubscribe = QualifiedCharacteristic(
+          _charToSubscribe = QualifiedCharacteristic(
               characteristicId: characteristic.characteristicId,
               serviceId: service.serviceId,
               deviceId: device.id);
           _flutterReactiveBle
-              .subscribeToCharacteristic(charToSubscribe)
+              .subscribeToCharacteristic(_charToSubscribe)
               .listen((value) {
             String receivedData = utf8.decode(value);
-            receivedDataNotifier.value = receivedData;
-            print("Received string from device: $receivedData");
-            _updateCount();
-            print("count 업데이트");
+            //_writeDataToDevice();
+            _onNewDataReceived(receivedData);
           });
+        }
+        if (characteristic.isWritableWithoutResponse ||
+            characteristic.isWritableWithResponse) {
+          _charToWrite = QualifiedCharacteristic(
+              characteristicId: characteristic.characteristicId,
+              serviceId: service.serviceId,
+              deviceId: device.id);
+          _writeDataToDevice();
         }
       }
     }
@@ -127,13 +139,47 @@ class BluetoothViewModel {
     }
   }
 
+  void _onNewDataReceived(String receivedData) {
+    // 데이터 수신 시 호출될 함수
+    receivedDataNotifier.value = receivedData;
+    print("Received string from device: $receivedData");
+    _updateCount();
+    print("count 업데이트");
+  }
+
+  Future<void> _writeDataToDevice() async {
+    print("${_charToWrite.characteristicId}");
+    print("${_charToWrite.serviceId}");
+    print(_charToWrite.deviceId);
+    try {
+      await _flutterReactiveBle.writeCharacteristicWithoutResponse(_charToWrite,
+          value: byte);
+    } catch (e) {
+      print("Characteristic write failed: $e");
+      // 필요한 경우 여기에서 재시도 로직을 추가하십시오.
+    }
+  }
+
   void _updateData() {}
+
   void enterRestState() {
     isRest = true;
   }
 
-  void exitRestState() {
-    isRest = false;
+  void setRestState(bool isRest) {
+    this.isRest = isRest;
+  }
+
+  void setCountSet(int setCount) {
+    this.setCount = setCount;
+  }
+
+  int getSetCount() {
+    return setCount;
+  }
+
+  void plusSetCount(int setCount) {
+    this.setCount += setCount;
   }
 
   // dispose 메서드
