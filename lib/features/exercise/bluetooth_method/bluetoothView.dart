@@ -94,6 +94,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
               if (snapshot.connectionState == ConnectionState.done) {
                 Future.delayed(Duration.zero, () {
                   viewModel?.setRestState(false);
+                  viewModel?.writeDataToDevice();
                   Navigator.of(context).pop(); // 바텀 시트를 닫습니다.
                 });
               }

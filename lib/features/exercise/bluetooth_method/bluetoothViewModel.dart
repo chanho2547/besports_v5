@@ -72,7 +72,7 @@ class BluetoothViewModel {
               .listen((value) {
             String receivedData = utf8.decode(value);
             //_writeDataToDevice();
-            _onNewDataReceived(receivedData);
+            _onNewDataReceived(receivedData, device);
           });
         }
         if (characteristic.isWritableWithoutResponse ||
@@ -81,7 +81,7 @@ class BluetoothViewModel {
               characteristicId: characteristic.characteristicId,
               serviceId: service.serviceId,
               deviceId: device.id);
-          _writeDataToDevice();
+          writeDataToDevice();
         }
       }
     }
@@ -125,7 +125,7 @@ class BluetoothViewModel {
   }
 
   // 디바운스된 카운터 업데이트 메서드
-  void _updateCount() {
+  void _updateCount(DiscoveredDevice device) async {
     if (!isRest) {
       // rest 상태가 아닐 때만 카운트 감소
       countNotifier.value--;
@@ -139,15 +139,15 @@ class BluetoothViewModel {
     }
   }
 
-  void _onNewDataReceived(String receivedData) {
+  void _onNewDataReceived(String receivedData, DiscoveredDevice device) {
     // 데이터 수신 시 호출될 함수
     receivedDataNotifier.value = receivedData;
     print("Received string from device: $receivedData");
-    _updateCount();
+    _updateCount(device);
     print("count 업데이트");
   }
 
-  Future<void> _writeDataToDevice() async {
+  Future<void> writeDataToDevice() async {
     print("${_charToWrite.characteristicId}");
     print("${_charToWrite.serviceId}");
     print(_charToWrite.deviceId);
@@ -158,12 +158,6 @@ class BluetoothViewModel {
       print("Characteristic write failed: $e");
       // 필요한 경우 여기에서 재시도 로직을 추가하십시오.
     }
-  }
-
-  void _updateData() {}
-
-  void enterRestState() {
-    isRest = true;
   }
 
   void setRestState(bool isRest) {
