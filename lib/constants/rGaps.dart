@@ -13,7 +13,8 @@ class RGaps {
 
   // Vertical Gaps
   vr(int raito) {
-    return SizedBox(height: _maxHeight * raito / 1000);
+    //0.016일경우 hr(16)입력 0.15일 경우 hr(150)입력
+    return SizedBox(height: _maxHeight * raito / 1000.0);
   }
 
   vr001() {
@@ -225,6 +226,11 @@ class RGaps {
   }
 
   // Horizontal Gaps
+  hr(int raito) {
+    //0.016일경우 hr(16)입력 0.15일 경우 hr(150)입력
+    return SizedBox(height: _maxWidth * raito / 1000.0);
+  }
+
   hr001() {
     return SizedBox(width: _maxWidth * 0.001);
   }

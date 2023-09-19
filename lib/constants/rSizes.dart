@@ -8,6 +8,15 @@ class RSizes {
   // 4. 가로로 1/10만큼 길이를 사용하고 싶으면, s.wrSize10() 수식.
 
   RSizes(this._maxHeight, this._maxWidth);
+  double rSize(String a, int raito) {
+    if (a == "height") {
+      return _maxHeight * raito / 1000.0;
+    }
+    if (a == "width") {
+      return _maxWidth * raito / 1000.0;
+    }
+    return 0.0;
+  }
 
   maxHeight() {
     return _maxHeight;

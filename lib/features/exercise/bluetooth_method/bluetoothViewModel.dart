@@ -148,9 +148,6 @@ class BluetoothViewModel {
   }
 
   Future<void> writeDataToDevice() async {
-    print("${_charToWrite.characteristicId}");
-    print("${_charToWrite.serviceId}");
-    print(_charToWrite.deviceId);
     try {
       await _flutterReactiveBle.writeCharacteristicWithoutResponse(_charToWrite,
           value: byte);
@@ -172,8 +169,8 @@ class BluetoothViewModel {
     return setCount;
   }
 
-  void plusSetCount(int setCount) {
-    this.setCount += setCount;
+  void minusSetCount() {
+    --setCount;
   }
 
   // dispose 메서드

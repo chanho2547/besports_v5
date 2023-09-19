@@ -55,7 +55,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       if (viewModel!.countNotifier.value == 0) {
         _showRestTimeSheet();
         setState(() {
-          viewModel?.plusSetCount(-1);
+          viewModel?.minusSetCount();
           _setMessage = "${viewModel?.getSetCount()} SET 남음";
 
           if (viewModel?.getSetCount() == 0) {
@@ -71,7 +71,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   void _showRestTimeSheet() async {
     viewModel?.setRestState(true);
-    int start = 5;
+    int start = 10;
 
     // 시간이 변화할 때마다 이 Stream에서 이벤트를 내보냅니다.
     Stream<int> timerStream =
