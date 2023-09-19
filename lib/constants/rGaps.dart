@@ -12,6 +12,10 @@ class RGaps {
   RGaps(this._maxHeight, this._maxWidth);
 
   // Vertical Gaps
+  vr(int raito) {
+    return SizedBox(height: _maxHeight * raito / 1000);
+  }
+
   vr001() {
     return SizedBox(height: _maxHeight * 0.001);
   }
