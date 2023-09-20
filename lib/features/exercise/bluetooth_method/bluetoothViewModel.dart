@@ -16,8 +16,6 @@ class BluetoothViewModel {
   final int _count = 5;
   bool isRest = false;
 
-  static final List<int> byte = utf8.encode("\$wr;");
-
   ValueNotifier<String> receivedDataNotifier = ValueNotifier<String>("");
 
   NavigationCallback? onNavigateToHome;
@@ -84,7 +82,7 @@ class BluetoothViewModel {
               characteristicId: characteristic.characteristicId,
               serviceId: service.serviceId,
               deviceId: device.id);
-          writeDataToDevice();
+          writeDataToDevice("\$wr;");
         }
       }
     }
@@ -150,7 +148,8 @@ class BluetoothViewModel {
     print("count 업데이트");
   }
 
-  Future<void> writeDataToDevice() async {
+  Future<void> writeDataToDevice(String text) async {
+    final List<int> byte = utf8.encode(text);
     try {
       await _flutterReactiveBle.writeCharacteristicWithoutResponse(_charToWrite,
           value: byte);

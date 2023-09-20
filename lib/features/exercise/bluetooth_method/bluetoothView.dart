@@ -71,7 +71,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   void onCloseTap() {
     viewModel?.setRestState(false);
-    viewModel?.writeDataToDevice();
+    viewModel?.writeDataToDevice("\$wr;");
     Navigator.of(context).pop();
   }
 
