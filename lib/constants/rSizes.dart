@@ -10,10 +10,12 @@ class RSizes {
   RSizes(this._maxHeight, this._maxWidth);
   double rSize(String a, int raito) {
     if (a == "height") {
-      return _maxHeight * raito / 1000.0;
+      double maxH = _maxHeight;
+      return maxH * raito / 1000.0;
     }
     if (a == "width") {
-      return _maxWidth * raito / 1000.0;
+      double maxW = _maxWidth;
+      return maxW * raito / 1000.0;
     }
     return 0.0;
   }

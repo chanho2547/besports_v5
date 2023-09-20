@@ -204,7 +204,7 @@ class _TopModalRoute<T> extends PopupRoute<T> {
   final WidgetBuilder builder;
 
   @override
-  Color? get barrierColor => Colors.black.withOpacity(0.5);
+  Color? get barrierColor => Colors.white.withOpacity(0.8);
 
   @override
   bool get barrierDismissible => true;

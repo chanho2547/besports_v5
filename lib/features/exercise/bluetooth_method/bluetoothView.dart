@@ -69,6 +69,12 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     });
   }
 
+  void onCloseTap() {
+    viewModel?.setRestState(false);
+    viewModel?.writeDataToDevice();
+    Navigator.of(context).pop();
+  }
+
   void _showRestTimeSheet() async {
     viewModel?.setRestState(true);
     int start = 10;
@@ -80,37 +86,102 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     }).take(start);
 
     await showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.white.withOpacity(0.2),
       context: context,
       isDismissible: true, // 바텀 시트 외부를 탭하면 바텀 시트가 닫힙니다.
       builder: (context) {
-        return Container(
-          height: s.maxHeight(),
-          color: Colors.white, // 백그라운드 색상을 흰색으로 설정
-          child: Center(
-              child: StreamBuilder<int>(
-            stream: timerStream,
-            initialData: start,
-            builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                Future.delayed(Duration.zero, () {
-                  viewModel?.setRestState(false);
-                  viewModel?.writeDataToDevice();
-                  Navigator.of(context).pop(); // 바텀 시트를 닫습니다.
-                });
-              }
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text("Rest Time!",
-                      style: TextStyle(color: Colors.black, fontSize: 25)),
-                  const SizedBox(height: 20),
-                  Text("${snapshot.data} seconds",
-                      style:
-                          const TextStyle(color: Colors.black, fontSize: 18)),
-                ],
-              );
-            },
-          )),
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: Container(
+            //color: Colors.transparent,
+            clipBehavior: Clip.hardEdge,
+            height: s.rSize("height", 600),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900.withOpacity(1),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
+              ),
+            ),
+
+            child: Center(
+                child: StreamBuilder<int>(
+              stream: timerStream,
+              initialData: start,
+              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  Future.delayed(Duration.zero, () {
+                    onCloseTap(); // 바텀 시트를 닫습니다.
+                  });
+                }
+                return Padding(
+                  padding: EdgeInsets.fromLTRB(
+                      s.rSize("width", 050), // left,
+                      s.rSize("height", 010), // top,
+                      s.rSize("width", 050), // right,
+                      s.rSize("height", 0) // bottom,
+                      ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            onPressed: () => {onCloseTap()},
+                            icon: const Icon(Icons.close),
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                      g.vr10(),
+                      Container(
+                        height: 130,
+                        width: 130,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        padding: EdgeInsets.all(
+                          s.rSize("width", 00),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              "Rest Time",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: s.rSize("width", 60),
+                              ),
+                            ),
+                            g.vr01(),
+                            Text(
+                              "${((snapshot.data ?? 0) ~/ 60).toString().padLeft(2, '0')}:${((snapshot.data ?? 0) % 60).toString().padLeft(2, '0')}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: s.rSize("width", 80),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      g.vr10(),
+                      Text(
+                        "SET: ${viewModel?.setCount}",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: s.rSize("width", 100),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            )),
+          ),
         );
       },
     );
@@ -121,7 +192,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
         context: context,
         builder: (context) {
           return Container(
-            height: s.hrSize25(), // 화면의 1/4 높이
+            height: s.rSize("height", 400),
             color: Colors.white,
             child: ListView.builder(
               itemCount: 10, // 이곳에서 원하는 setCount 범위를 설정하세요
@@ -267,13 +338,31 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             },
                             child: ValueListenableBuilder<int>(
                               valueListenable: viewModel!.countNotifier,
-                              builder: (context, count, _) => Text(
-                                '$count',
-                                style: const TextStyle(
-                                  fontSize: 100,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              builder: (context, count, _) => Stack(
+                                children: [
+                                  Center(
+                                    child: CircularProgressIndicator(
+                                      value: count /
+                                          5, // count 값에 따라 진행률이 변경됩니다. maxCount는 최대 카운트 값입니다.
+                                      strokeWidth: 10,
+                                      backgroundColor: Colors
+                                          .grey.shade400, // 미완료 부분의 색상을 설정
+                                      valueColor:
+                                          const AlwaysStoppedAnimation<Color>(
+                                              Colors.green), // 완료 부분의 색상을 설정
+                                    ),
+                                  ),
+                                  Center(
+                                    child: Text(
+                                      '$count',
+                                      style: const TextStyle(
+                                        fontSize: 100,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
