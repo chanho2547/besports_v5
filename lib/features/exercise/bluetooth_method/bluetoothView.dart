@@ -45,7 +45,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       vsync: this,
     );
 
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
         CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
     viewModel!.countNotifier.addListener(() {
       _animationController.forward().then((_) {
@@ -138,9 +138,9 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                       Container(
                         height: 130,
                         width: 130,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.red,
+                          color: Theme.of(context).primaryColor,
                         ),
                         padding: EdgeInsets.all(
                           s.rSize("width", 00),
@@ -324,13 +324,13 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                                 scale: _pulseAnimation.value,
                                 child: Container(
                                   padding: const EdgeInsets.all(15.0),
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: const Color(0xFF373737), // 초록색 띠
-                                    border: Border.all(
-                                      color: Colors.grey.shade100,
-                                      width: Sizes.size7,
-                                    ),
+                                    color: Color(0xFF373737), // 초록색 띠
+                                    // border: Border.all(
+                                    //   color: Colors.grey.shade100,
+                                    //   width: Sizes.size7,
+                                    // ),
                                   ),
                                   child: child,
                                 ),
@@ -339,17 +339,23 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             child: ValueListenableBuilder<int>(
                               valueListenable: viewModel!.countNotifier,
                               builder: (context, count, _) => Stack(
+                                alignment: Alignment.center,
                                 children: [
                                   Center(
-                                    child: CircularProgressIndicator(
-                                      value: count /
-                                          5, // count 값에 따라 진행률이 변경됩니다. maxCount는 최대 카운트 값입니다.
-                                      strokeWidth: 10,
-                                      backgroundColor: Colors
-                                          .grey.shade400, // 미완료 부분의 색상을 설정
-                                      valueColor:
-                                          const AlwaysStoppedAnimation<Color>(
-                                              Colors.green), // 완료 부분의 색상을 설정
+                                    child: SizedBox(
+                                      width: 200,
+                                      height: 200,
+                                      child: CircularProgressIndicator(
+                                        value: count /
+                                            5, // count 값에 따라 진행률이 변경됩니다. maxCount는 최대 카운트 값입니다.
+                                        strokeWidth: 10,
+                                        backgroundColor:
+                                            Colors.green, // 미완료 부분의 색상을 설정
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          Colors.grey.shade400,
+                                        ), // 완료 부분의 색상을 설정
+                                      ),
                                     ),
                                   ),
                                   Center(

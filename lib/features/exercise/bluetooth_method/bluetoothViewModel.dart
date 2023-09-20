@@ -13,6 +13,7 @@ class BluetoothViewModel {
   StreamSubscription? _scanSubscription;
   Timer? _debounceTimer;
   int setCount = 4;
+  final int _count = 5;
   bool isRest = false;
 
   static final List<int> byte = utf8.encode("\$wr;");
@@ -42,6 +43,8 @@ class BluetoothViewModel {
 
     _startScanning(); // 스캔 시작 메서드 호출
   }
+
+  int get count => _count;
 
   // 장치 스캔 시작 메서드
   void _startScanning() {
