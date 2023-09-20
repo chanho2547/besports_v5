@@ -1,3 +1,6 @@
+import 'package:besports_v5/constants/custom_colors.dart';
+import 'package:besports_v5/constants/rGaps.dart';
+import 'package:besports_v5/constants/rSizes.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -13,6 +16,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late ScrollController _scrollController;
+  late RSizes s;
+  late RGaps g;
 
   double? titleTopPadding;
   double _opacity = 1.0;
@@ -57,10 +62,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     String name = "Milky Sound";
     String location = "Dujong, Cheonan";
 
-    final double appHeight = MediaQuery.of(context).size.height;
-    final double appWidth = MediaQuery.of(context).size.width;
+    s = RSizes(
+        MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
+    g = RGaps(
+        MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
 
-    titleTopPadding ??= appHeight * 0.35;
+    titleTopPadding ??= s.hrSize35();
 
     final List<String> images = [
       'Images/1.jpg',
@@ -89,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: custom_colors.white,
         body: CustomScrollView(
           controller: _scrollController,
           slivers: <Widget>[
@@ -101,54 +108,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               elevation: 5.0,
-              backgroundColor: const Color(0xFF373737),
+              backgroundColor: custom_colors.backgroundLightBlack,
               pinned: true,
               stretch: true,
-              collapsedHeight: appHeight * 0.1,
-              expandedHeight: appHeight * 0.4,
+              collapsedHeight: s.hrSize10(),
+              expandedHeight: s.hrSize40(),
               flexibleSpace: FlexibleSpaceBar(
                 background: Opacity(
                   opacity: _opacity,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: appHeight * 0.05,
-                      ),
+                      g.vr05(),
                       CircleAvatar(
                         backgroundImage: const AssetImage('Images/main.jpg'),
-                        radius: appWidth * 0.15,
+                        radius: s.wrSize15(),
                       ),
-                      SizedBox(height: appHeight * 0.02),
+                      g.vr02(),
                       Text(
                         name,
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: appWidth * 0.07,
+                          color: custom_colors.white,
+                          fontSize: s.wrSize07(),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      SizedBox(height: appHeight * 0.015),
+                      g.vr015(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             FontAwesomeIcons.locationDot,
-                            color: Colors.white,
+                            color: custom_colors.white,
+                            size: s.hrSize02(),
                           ),
                           SizedBox(
-                            width: appWidth * 0.01,
+                            width: s.wrSize01(),
                           ),
                           Text(
                             location,
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: appWidth * 0.04,
+                              color: custom_colors.white,
+                              fontSize: s.wrSize04(),
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: appHeight * 0.05),
+                      g.vr05(),
                     ],
                   ),
                 ),
@@ -156,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     SizedBox(
-                      width: appWidth * 0.15,
+                      width: s.wrSize15(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -164,17 +170,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Text(
                             "$imagesNum",
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: appHeight * 0.015,
+                              color: custom_colors.white,
+                              fontSize: s.hrSize015(),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(height: appHeight * 0.01),
+                          g.vr01(),
                           Text(
                             "Images",
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: appHeight * 0.012,
+                              color: custom_colors.white,
+                              fontSize: s.hrSize012(),
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -182,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     SizedBox(
-                      width: appWidth * 0.15,
+                      width: s.wrSize15(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -190,17 +196,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Text(
                             displayfollwers,
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: appHeight * 0.015,
+                              color: custom_colors.white,
+                              fontSize: s.hrSize015(),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(height: appHeight * 0.01),
+                          g.vr01(),
                           Text(
                             "Followers",
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: appHeight * 0.012,
+                              color: custom_colors.white,
+                              fontSize: s.hrSize012(),
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -208,7 +214,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     SizedBox(
-                      width: appWidth * 0.15,
+                      width: s.wrSize15(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -216,17 +222,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Text(
                             displayfollwings,
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: appHeight * 0.015,
+                              color: custom_colors.white,
+                              fontSize: s.hrSize015(),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(height: appHeight * 0.01),
+                          g.vr01(),
                           Text(
                             "Following",
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: appHeight * 0.012,
+                              color: custom_colors.white,
+                              fontSize: s.hrSize012(),
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -244,9 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 [
                   Column(
                     children: [
-                      SizedBox(
-                        height: appHeight * 0.05,
-                      ),
+                      g.vr05(),
                       GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),

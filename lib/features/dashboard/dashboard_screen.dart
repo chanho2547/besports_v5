@@ -1,14 +1,15 @@
 import 'package:besports_v5/constants/custom_colors.dart';
-import 'package:besports_v5/constants/sizes.dart';
+import 'package:besports_v5/constants/rGaps.dart';
+import 'package:besports_v5/constants/rSizes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-
 import 'functions/_date_picker.dart';
-import 'Screens/overview_screen.dart';
-import 'Screens/graph1_screen.dart';
-import 'Screens/graph2_screen.dart';
+import 'functions/bottomDaysSetting.dart';
+import 'functions/weight_progress_card.dart';
+
+enum updateState { Plus, Even, Minus }
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -20,27 +21,20 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  late ScrollController _scrollController;
   final DateTime _baseDate = DateTime.now();
-  int _currentIndex = 2;
-  int dates_count = 5;
   DateTime _startDate = DateTime.utc(2022, 2, 8);
 
-  double _selectedOffset = 0.0;
+  List<String> options = ["Week", "2 Weeks", "Month", "Custom"];
+  String selectedOption = "Week";
+  String showingOption = "Week";
+  bool isCustom = false;
+
+  late RSizes s;
+  late RGaps g;
 
   @override
   void initState() {
     super.initState();
-    _scrollController =
-        ScrollController(initialScrollOffset: 2 * 100.0) // Start at the middle
-          ..addListener(() {
-            int newIndex = (_scrollController.offset / 100.0).round();
-            if (newIndex != _currentIndex) {
-              setState(() {
-                _currentIndex = newIndex;
-              });
-            }
-          });
   }
 
   void _showDatePicker(BuildContext context) {
@@ -56,252 +50,248 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  void _showOptions() {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (BuildContext context) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          child: BottomSheetOptions(
+            options: options,
+            initialValue: selectedOption,
+            onSelected: (value, isCurrentCustom) {
+              setState(() {
+                selectedOption = isCurrentCustom ? "Custom" : value;
+                showingOption = value;
+                isCustom = isCurrentCustom;
+              });
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final double appHeight = MediaQuery.of(context).size.height;
-    final double appWidth = MediaQuery.of(context).size.width;
-    String startDate = DateFormat('yyyy. MM. dd').format(_startDate);
+    s = RSizes(
+        MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
+    g = RGaps(
+        MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
     Duration difference = _baseDate.difference(_startDate);
     String dDay = difference.inDays + 1 > 0
         ? "+${difference.inDays + 1}"
         : "${difference.inDays + 1}";
 
-    Widget _buildTab(
-        int index, String title, double appHeight, double appWidth) {
-      bool isSelected = _currentIndex == index;
-
-      return GestureDetector(
-        onTap: () {
-          setState(() {
-            _currentIndex = index;
-            _selectedOffset = appWidth * 0.30 * index;
-          });
-        },
-        child: AnimatedContainer(
-          width: appWidth * 0.305,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.green : Colors.transparent,
-            borderRadius: BorderRadius.circular(5), // 둥근 모서리를 위해 추가
-            border: isSelected
-                ? Border.all(color: Colors.green, width: 2.0)
-                : null, // 선택된 항목에만 둥근 직사각형 테두리 추가
-          ),
-          child: Center(
-            child: Text(
-              title,
-              style: TextStyle(
-                color:
-                    isSelected ? Colors.white : Colors.black.withOpacity(0.5),
-                fontSize: appHeight * 0.02,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    Widget _buildCurrentScreen() {
-      switch (_currentIndex) {
-        case 0:
-          return const OverviewScreen();
-        case 1:
-          return const Graph1Screen();
-        case 2:
-          return Graph2Screen();
-        default:
-          return const OverviewScreen(); // Default to Overview screen
-      }
-    }
-
     return SafeArea(
       child: Scaffold(
-        backgroundColor: custom_colors.bgGray,
+        backgroundColor: custom_colors.backgroundDarkWhite,
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(appHeight * 0.1),
+          preferredSize: Size.fromHeight(s.hrSize10()),
           child: AppBar(
-            backgroundColor: custom_colors.bgGray,
+            backgroundColor: custom_colors.backgroundDarkWhite,
             flexibleSpace: Align(
               alignment: Alignment.center,
-              child: Image.asset(
-                'Images/logo_green.png',
-                height: appHeight * 0.04,
-                width: appWidth * 0.1,
-                fit: BoxFit.fill,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: s.wrSize25()),
+                    child: Image.asset(
+                      'Images/logo_green.png',
+                      height: s.hrSize04(),
+                      width: s.wrSize10(),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: s.wrSize05()),
+                    width: s.wrSize20(),
+                    child: IconButton(
+                      onPressed: () => _showDatePicker(context),
+                      icon: const FaIcon(FontAwesomeIcons.ellipsis),
+                      color: custom_colors.ellipsisGrey,
+                      iconSize: s.hrSize035(),
+                    ),
+                  )
+                ],
               ),
             ),
             elevation: 0,
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: appHeight * 0.02),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: appWidth * 0.02),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: appHeight * 0.02,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'You are ',
-                                style: TextStyle(
-                                  color: custom_colors.txtBlack,
-                                  fontSize: appHeight * 0.028,
-                                  fontWeight: FontWeight.w400,
-                                ),
+        body: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: s.hrSize02()),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: s.wrSize02()),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        g.vr02(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'D$dDay',
+                              style: TextStyle(
+                                color: custom_colors.hotRed,
+                                fontSize: s.hrSize028(),
+                                fontWeight: FontWeight.w900,
                               ),
-                              Text(
-                                'D$dDay',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: appHeight * 0.028,
-                                  fontWeight: FontWeight.w900,
-                                ),
+                            ),
+                            g.hr04(),
+                            Text(
+                              ' with ',
+                              style: TextStyle(
+                                color: custom_colors.black,
+                                fontSize: s.hrSize028(),
+                                fontWeight: FontWeight.w400,
                               ),
-                              Text(
-                                ' with ',
-                                style: TextStyle(
-                                  color: custom_colors.txtBlack,
-                                  fontSize: appHeight * 0.028,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              Text(
-                                'BESPORTS',
-                                style: TextStyle(
-                                  color: Colors.green,
-                                  fontSize: appHeight * 0.028,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                            g.hr02(),
+                            Image.asset(
+                              'Images/besports_letters_logo.png',
+                              width: s.wrSize40(),
+                              height: s.hrSize02(),
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: appHeight * 0.01,
+                  ),
+                  g.vr03(),
+                  Container(
+                    height: s.hrSize60(),
+                    width: s.maxWidth(),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: custom_colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          offset: const Offset(0, 5),
+                          blurRadius: 10,
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: appWidth * 0.02),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                              s.wrSize03(), s.hrSize03(), s.wrSize03(), 0),
+                          child: Column(
                             children: [
-                              Text(
-                                "since",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: appHeight * 0.02,
-                                  color: Colors.green,
+                              Center(
+                                child: GestureDetector(
+                                  onTap: _showOptions,
+                                  child: Container(
+                                    width: isCustom
+                                        ? s.wrSize50() + s.wrSize20()
+                                        : s.wrSize25(),
+                                    height: s.hrSize05(),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: custom_colors.besportsGreen,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          offset: const Offset(0, 5),
+                                          blurRadius: 10,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        showingOption,
+                                        style: const TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w600,
+                                            color: custom_colors.white),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
+                              g.vr005(),
                               SizedBox(
-                                width: appWidth * 0.01,
-                              ),
-                              Text(
-                                startDate,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: appHeight * 0.02,
-                                  color: Colors.green,
-                                  fontStyle: FontStyle.italic,
+                                height: s.hrSize50(),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      weight_progress_card(
+                                        g: g,
+                                        s: s,
+                                        workoutName: "Bench Press",
+                                        UpDownEven: updateState.Plus,
+                                        totalWeights: 150,
+                                        updateWeights: 15,
+                                      ),
+                                      weight_progress_card(
+                                        g: g,
+                                        s: s,
+                                        workoutName: "Shoulder Press",
+                                        UpDownEven: updateState.Minus,
+                                        totalWeights: 200,
+                                        updateWeights: 127,
+                                      ),
+                                      weight_progress_card(
+                                        g: g,
+                                        s: s,
+                                        workoutName: "Squat",
+                                        UpDownEven: updateState.Even,
+                                        totalWeights: 350,
+                                        updateWeights: 0,
+                                      ),
+                                      weight_progress_card(
+                                        g: g,
+                                        s: s,
+                                        workoutName: "Lat Pull Down",
+                                        UpDownEven: updateState.Minus,
+                                        totalWeights: 400,
+                                        updateWeights: 20,
+                                      ),
+                                      weight_progress_card(
+                                        g: g,
+                                        s: s,
+                                        workoutName: "Cable Crossover",
+                                        UpDownEven: updateState.Plus,
+                                        totalWeights: 270,
+                                        updateWeights: 90,
+                                      ),
+                                      weight_progress_card(
+                                        g: g,
+                                        s: s,
+                                        workoutName: "Pec Deck Fly",
+                                        UpDownEven: updateState.Minus,
+                                        totalWeights: 20,
+                                        updateWeights: 40,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          GestureDetector(
-                            onTap: () => _showDatePicker(context),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: appWidth * 0.005,
-                                  horizontal: appHeight * 0.01),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: custom_colors.txtBlack,
-                              ),
-                              child: const Text(
-                                'new start date',
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.white,
-                                    fontStyle: FontStyle.italic),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        )
+                      ],
                     ),
-                    SizedBox(
-                      height: appHeight * 0.036,
-                    ),
-                    Container(
-                      height: appHeight * 0.05,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            offset: const Offset(0, 5),
-                            blurRadius: 10,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildTab(0, "Overview", appHeight, appWidth),
-                          _buildTab(1, "Graph1", appHeight, appWidth),
-                          _buildTab(2, "Graph2", appHeight, appWidth),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: appHeight * 0.01,
-                    ),
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            height: appHeight * 0.56,
-                            width: appWidth,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  offset: const Offset(0, 5),
-                                  blurRadius: 10,
-                                ),
-                              ],
-                            ),
-                            child:
-                                _buildCurrentScreen(), // Display the selected screen
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

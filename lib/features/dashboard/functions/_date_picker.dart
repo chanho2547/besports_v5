@@ -1,3 +1,4 @@
+import 'package:besports_v5/constants/custom_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +35,7 @@ class DatePicker {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: Colors.blue,
+                              color: custom_colors.besportsGreen,
                             ),
                           ),
                         ),
@@ -70,7 +71,7 @@ class DatePicker {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: Colors.blue,
+                              color: custom_colors.besportsGreen,
                             ),
                           ),
                         ),
@@ -88,7 +89,7 @@ class DatePicker {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: Colors.blue,
+                              color: custom_colors.besportsGreen,
                             ),
                           ),
                         ),
@@ -101,6 +102,7 @@ class DatePicker {
               Expanded(
                 child: CupertinoDatePicker(
                   initialDateTime: startDate,
+                  maximumDate: DateTime.now(),
                   mode: CupertinoDatePickerMode.date,
                   onDateTimeChanged: (DateTime newDate) {
                     selectedDate = newDate;
