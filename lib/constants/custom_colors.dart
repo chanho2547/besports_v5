@@ -15,4 +15,11 @@ class custom_colors {
   static const Color updownBlue = Color.fromRGBO(27, 69, 177, 1);
   static const Color evenGreen = Color.fromRGBO(56, 142, 60, 1);
   static const Color consumeLightGreen = Color.fromRGBO(154, 186, 126, 1);
+
+  //임의로 추가한 색상
+  static const Color bgGray = Color.fromRGBO(238, 238, 238, 1);
+  static const Color txtLightBlack = Color.fromRGBO(33, 41, 58, 1);
+  static const Color bgWhite = Color.fromRGBO(255, 255, 225, 1);
+  static const Color txtBlack = Color.fromRGBO(0, 0, 0, 1);
+  static const Color kcalGrey = Color.fromRGBO(37, 37, 37, 1);
 }

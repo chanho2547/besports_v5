@@ -1,4 +1,5 @@
 import 'package:besports_v5/constants/custom_colors.dart';
+import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
 import 'package:flutter/cupertino.dart';
@@ -136,7 +137,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        g.vr02(),
+                        g.vr05(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -160,7 +161,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             g.hr02(),
                             Image.asset(
                               'Images/besports_letters_logo.png',
-                              width: s.wrSize40(),
+                              width: s.wrSize45(),
                               height: s.hrSize02(),
                               fit: BoxFit.fitHeight,
                             ),

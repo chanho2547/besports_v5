@@ -1,4 +1,5 @@
 import 'package:besports_v5/constants/custom_colors.dart';
+import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
 import 'package:besports_v5/features/dashboard/dashboard_screen.dart';
@@ -100,7 +101,7 @@ class workout_update extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Container(
           padding: EdgeInsets.symmetric(
@@ -117,18 +118,19 @@ class workout_update extends StatelessWidget {
           ),
         ),
         SizedBox(
-          width: s.hrSize20(),
+          width: s.hrSize15(),
           child: Text(
             "${totalWeights}KG",
-            textAlign: TextAlign.start,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 35,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
+        Gaps.h10,
         SizedBox(
-          width: s.wrSize20(),
+          width: s.wrSize15(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

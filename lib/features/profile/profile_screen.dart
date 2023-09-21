@@ -59,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ? "${(((followings / 1000) * 10).toInt() / 10).toStringAsFixed(1)}k"
         : followings.toString();
 
-    String name = "Milky Sound";
+    String name = "USER";
     String location = "Dujong, Cheonan";
 
     s = RSizes(

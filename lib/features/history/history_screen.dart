@@ -1,4 +1,5 @@
 import 'package:besports_v5/constants/custom_colors.dart';
+import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
 import 'package:flutter/material.dart';
@@ -124,6 +125,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           vertical: s.hrSize02(),
                         ),
                         child: Column(children: [
+                          const SizedBox(
+                            height: 30,
+                          ),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -380,6 +384,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 ),
                             // Other options...
                           ),
+                          g.vr06(),
                           GestureDetector(
                             onTap: () {
                               setState(() {
@@ -389,7 +394,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             },
                             child: Container(
                               width: s.wrSize25(),
-                              height: s.hrSize05(),
+                              height: s.hrSize04(),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 color: custom_colors.besportsGreen,
