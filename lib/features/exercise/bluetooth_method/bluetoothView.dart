@@ -21,7 +21,7 @@ class BluetoothScreen extends StatefulWidget {
 
 class _BluetoothScreenState extends State<BluetoothScreen>
     with SingleTickerProviderStateMixin {
-  late BluetoothViewModel? viewModel;
+  late BluetoothViewModel? _viewModel;
   late AnimationController _animationController;
   late Animation<double> _pulseAnimation;
 
@@ -37,11 +37,11 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       MyHomePageState.isModal = true;
       print("BluetoothViewModel 초기화 중");
 
-      viewModel = BluetoothViewModel(deviceAddr: widget.addr);
-      viewModel!.onNavigateToHome = _navigateToHome;
+      _viewModel = BluetoothViewModel(deviceAddr: widget.addr);
+      _viewModel!.onNavigateToHome = _navigateToHome;
 
       // ViewModel 초기화
-      viewModel!.initialize();
+      _viewModel!.initialize();
 
       _animationController = AnimationController(
         duration: const Duration(milliseconds: 500),
@@ -51,21 +51,21 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
           CurvedAnimation(
               parent: _animationController, curve: Curves.easeInOut));
-      viewModel!.countNotifier.addListener(() {
+      _viewModel!.countNotifier.addListener(() {
         _animationController.forward().then((_) {
           _animationController.reverse();
         });
 
-        if (viewModel!.countNotifier.value == 0) {
+        if (_viewModel!.countNotifier.value == 0) {
           _showRestTimeSheet();
           setState(() {
-            viewModel?.minusSetCount();
-            _setMessage = "${viewModel?.setCount} SET 남음";
+            _viewModel?.minusSetCount();
+            _setMessage = "${_viewModel?.setCount} SET 남음";
 
-            if (viewModel?.setCount == 0) {
+            if (_viewModel?.setCount == 0) {
               _setMessage = "운동 종료";
-              viewModel?.setCountSet = 3;
-              viewModel!.disconnect();
+              _viewModel?.setCountSet = 3;
+              _viewModel!.disconnect();
               _navigateToHome();
             }
           });
@@ -74,14 +74,29 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     }
   }
 
-  void onCloseTap() {
-    viewModel?.setRestState = false;
-    viewModel?.writeDataToDevice("\$wr;");
+  void _onCloseTap() {
+    _viewModel?.setRestState = false;
+    _viewModel?.writeDataToDevice("\$wr;");
     Navigator.of(context).pop();
   }
 
+  // 홈 화면으로 이동하는 함수
+  void _navigateToHome() {
+    //dispose(); // 여기서 연결 해제
+
+    // 4초 후에 홈 화면으로 이동하는 코드
+
+    print("0초 지남, 홈 화면으로 이동 시도중");
+    //goRouter.go("/home");
+    HapticFeedback.lightImpact(); // 햅틱 피드백 호출
+    _viewModel?.setCountSet = 4;
+    _viewModel?.dispose();
+    print("viewModel.dispose");
+    Navigator.pop(context);
+  }
+
   void _showRestTimeSheet() async {
-    viewModel?.setRestState = true;
+    _viewModel?.setRestState = true;
     int start = 10;
 
     // 시간이 변화할 때마다 이 Stream에서 이벤트를 내보냅니다.
@@ -117,7 +132,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
               builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   Future.delayed(Duration.zero, () {
-                    onCloseTap(); // 바텀 시트를 닫습니다.
+                    _onCloseTap(); // 바텀 시트를 닫습니다.
                   });
                 }
                 return Padding(
@@ -133,7 +148,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
-                            onPressed: () => {onCloseTap()},
+                            onPressed: () => {_onCloseTap()},
                             icon: const Icon(Icons.close),
                             color: Colors.white,
                           )
@@ -175,7 +190,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                       ),
                       g.vr10(),
                       Text(
-                        "SET: ${viewModel?.setCount}",
+                        "SET: ${_viewModel?.setCount}",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: s.rSize("width", 100),
@@ -206,7 +221,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                   title: Text('Set ${index + 1}'),
                   onTap: () {
                     setState(() {
-                      viewModel?.setCountSet = index + 1;
+                      _viewModel?.setCountSet = index + 1;
                     });
                     Navigator.pop(context);
                   },
@@ -215,21 +230,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
             ),
           );
         });
-  }
-
-  // 홈 화면으로 이동하는 함수
-  void _navigateToHome() {
-    //dispose(); // 여기서 연결 해제
-
-    // 4초 후에 홈 화면으로 이동하는 코드
-
-    print("0초 지남, 홈 화면으로 이동 시도중");
-    //goRouter.go("/home");
-    HapticFeedback.lightImpact(); // 햅틱 피드백 호출
-    viewModel?.setCountSet = 4;
-    viewModel?.dispose();
-    print("viewModel.dispose");
-    Navigator.pop(context);
   }
 
   @override
@@ -276,9 +276,9 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             ),
                             onPressed: () {
                               // 뒤로가기 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
-                              viewModel?.setCountSet = 4;
-                              viewModel?.disconnect();
-                              viewModel?.dispose();
+                              _viewModel?.setCountSet = 4;
+                              _viewModel?.disconnect();
+                              _viewModel?.dispose();
                               Navigator.pop(context);
                             },
                           ),
@@ -303,7 +303,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                     g.vr12(),
                     Container(
                       child: ValueListenableBuilder<String>(
-                        valueListenable: viewModel!.receivedDataNotifier,
+                        valueListenable: _viewModel!.receivedDataNotifier,
                         builder: (context, receivedData, _) => Center(
                           child: Text(
                             "${receivedData.replaceAll("\$r", '').replaceAll(';', '')} KG",
@@ -342,7 +342,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                               );
                             },
                             child: ValueListenableBuilder<int>(
-                              valueListenable: viewModel!.countNotifier,
+                              valueListenable: _viewModel!.countNotifier,
                               builder: (context, count, _) => Stack(
                                 alignment: Alignment.center,
                                 children: [
@@ -396,7 +396,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   @override
   void dispose() {
-    viewModel!.dispose();
+    _viewModel!.dispose();
     _animationController.dispose();
     super.dispose();
   }
