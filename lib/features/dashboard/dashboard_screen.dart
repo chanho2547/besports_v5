@@ -236,7 +236,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         s: s,
                                         workoutName: "Bench Press",
                                         UpDownEven: updateState.Plus,
-                                        totalWeights: 150,
+                                        totalWeights: 70,
                                         updateWeights: 15,
                                       ),
                                       weight_progress_card(
@@ -244,15 +244,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         s: s,
                                         workoutName: "Shoulder Press",
                                         UpDownEven: updateState.Minus,
-                                        totalWeights: 200,
-                                        updateWeights: 127,
+                                        totalWeights: 90,
+                                        updateWeights: 10,
                                       ),
                                       weight_progress_card(
                                         g: g,
                                         s: s,
                                         workoutName: "Squat",
                                         UpDownEven: updateState.Even,
-                                        totalWeights: 350,
+                                        totalWeights: 120,
                                         updateWeights: 0,
                                       ),
                                       weight_progress_card(
@@ -260,7 +260,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         s: s,
                                         workoutName: "Lat Pull Down",
                                         UpDownEven: updateState.Minus,
-                                        totalWeights: 400,
+                                        totalWeights: 100,
                                         updateWeights: 20,
                                       ),
                                       weight_progress_card(
@@ -268,8 +268,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         s: s,
                                         workoutName: "Cable Crossover",
                                         UpDownEven: updateState.Plus,
-                                        totalWeights: 270,
-                                        updateWeights: 90,
+                                        totalWeights: 70,
+                                        updateWeights: 10,
                                       ),
                                       weight_progress_card(
                                         g: g,
