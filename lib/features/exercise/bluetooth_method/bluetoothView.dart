@@ -20,10 +20,13 @@ class BluetoothScreen extends StatefulWidget {
 }
 
 class _BluetoothScreenState extends State<BluetoothScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late BluetoothViewModel? _viewModel;
-  late AnimationController _animationController;
+
   late Animation<double> _pulseAnimation;
+  late AnimationController _animationController;
+  late Animation<double> _progressAnimation;
+  final int _count = 0;
 
   late RSizes s;
   late RGaps g;
@@ -32,8 +35,26 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   @override
   void initState() {
+    // 부드러운 애니메이션을 위한 코드
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500), // 원하는 지속 시간을 설정하세요.
+      vsync: this,
+    );
+    // 애니메이션을 위한 리스너
+    _animationController.addListener(() {
+      setState(() {});
+    });
+
+    _progressAnimation(double count) => Tween<double>(
+          begin: 5 - count,
+          end: 5 - count,
+        ).animate(CurvedAnimation(
+          parent: _animationController,
+          curve: Curves.easeInOut,
+        ));
     if (!MyHomePageState.isModal) {
       super.initState();
+
       MyHomePageState.isModal = true;
       print("BluetoothViewModel 초기화 중");
 
@@ -43,10 +64,10 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       // ViewModel 초기화
       _viewModel!.initialize();
 
-      _animationController = AnimationController(
-        duration: const Duration(milliseconds: 500),
-        vsync: this,
-      );
+      // _animationController = AnimationController(
+      //   duration: const Duration(milliseconds: 500),
+      //   vsync: this,
+      // );
 
       _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
           CurvedAnimation(
@@ -233,6 +254,24 @@ class _BluetoothScreenState extends State<BluetoothScreen>
         });
   }
 
+  _updateProgress(double count) {
+    setState(
+      () {
+        _progressAnimation = Tween<double>(
+          begin: _progressAnimation.value, // 현재의 애니메이션 값
+          end: (5 - _count) / 5, // 새로운 count 값으로 계산된 값
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
+      },
+    );
+
+    _animationController.forward(from: 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     //size
@@ -350,21 +389,21 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                                       width: 200,
                                       height: 200,
                                       child: CircularProgressIndicator(
-                                        value: count /
-                                            5, // count 값에 따라 진행률이 변경됩니다. maxCount는 최대 카운트 값입니다.
+                                        value: (5 - count) /
+                                            5, // count 값에 따라 진행률이 변경됩니다. 5는 최대 카운트 값입니다.
                                         strokeWidth: 10,
-                                        backgroundColor:
-                                            Colors.green, // 미완료 부분의 색상을 설정
+                                        backgroundColor: Colors
+                                            .grey.shade400, // 미완료 부분의 색상을 설정
                                         valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                          Colors.grey.shade400,
+                                            const AlwaysStoppedAnimation<Color>(
+                                          Colors.green,
                                         ), // 완료 부분의 색상을 설정
                                       ),
                                     ),
                                   ),
                                   Center(
                                     child: Text(
-                                      '$count',
+                                      '${5 - count}',
                                       style: const TextStyle(
                                         fontSize: 100,
                                         color: Colors.white,
