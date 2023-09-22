@@ -25,7 +25,7 @@ class DatePicker {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.12,
+                        width: MediaQuery.of(context).size.width * 0.14,
                         child: TextButton(
                           onPressed: () {
                             Navigator.pop(context);
@@ -59,7 +59,7 @@ class DatePicker {
                         ),
                       ),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.12,
+                        width: MediaQuery.of(context).size.width * 0.14,
                         child: TextButton(
                           onPressed: () {
                             onDateSelected(DateTime
@@ -77,7 +77,7 @@ class DatePicker {
                         ),
                       ),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.12,
+                        width: MediaQuery.of(context).size.width * 0.14,
                         child: TextButton(
                           onPressed: () {
                             onDateSelected(

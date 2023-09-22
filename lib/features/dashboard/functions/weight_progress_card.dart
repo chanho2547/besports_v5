@@ -19,7 +19,7 @@ class weight_progress_card extends StatelessWidget {
   final RGaps g;
   final RSizes s;
   String workoutName;
-  updateState UpDownEven;
+  updateStatus UpDownEven;
   int totalWeights;
   int updateWeights;
 
@@ -72,28 +72,28 @@ class workout_update extends StatelessWidget {
 
   final RSizes s;
   String workoutName;
-  updateState upDownEven;
+  updateStatus upDownEven;
   int totalWeights;
   int updateWeights;
 
   Color _getColorFromState() {
     switch (upDownEven) {
-      case updateState.Plus:
+      case updateStatus.Plus:
         return custom_colors.updownRed;
-      case updateState.Even:
+      case updateStatus.Even:
         return custom_colors.evenGreen; // 이 색상은 정의해야 합니다.
-      case updateState.Minus:
+      case updateStatus.Minus:
         return custom_colors.updownBlue;
     }
   }
 
   String _getImageFromState() {
     switch (upDownEven) {
-      case updateState.Plus:
+      case updateStatus.Plus:
         return "Images/updownUpRed.png";
-      case updateState.Even:
+      case updateStatus.Even:
         return "Images/updownEvenGreen.png"; // 이 색상은 정의해야 합니다.
-      case updateState.Minus:
+      case updateStatus.Minus:
         return "Images/updownDownBlue.png";
     }
   }
@@ -107,7 +107,7 @@ class workout_update extends StatelessWidget {
           padding: EdgeInsets.symmetric(
             horizontal: s.wrSize01(),
           ),
-          width: s.hrSize12(),
+          width: s.hrSize10(),
           child: Text(
             workoutName,
             textAlign: TextAlign.center,
@@ -118,7 +118,7 @@ class workout_update extends StatelessWidget {
           ),
         ),
         SizedBox(
-          width: s.hrSize15(),
+          width: s.hrSize20(),
           child: Text(
             "${totalWeights}KG",
             textAlign: TextAlign.center,
@@ -130,7 +130,7 @@ class workout_update extends StatelessWidget {
         ),
         Gaps.h10,
         SizedBox(
-          width: s.wrSize15(),
+          width: s.wrSize10(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -142,7 +142,7 @@ class workout_update extends StatelessWidget {
                 updateWeights == 0 ? "EVEN" : "${updateWeights}KG",
                 style: TextStyle(
                   color: _getColorFromState(),
-                  fontSize: 14,
+                  fontSize: 10,
                   fontWeight: FontWeight.w400,
                 ),
               ),

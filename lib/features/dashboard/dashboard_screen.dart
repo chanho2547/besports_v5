@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:besports_v5/constants/custom_colors.dart';
 import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
@@ -10,7 +12,7 @@ import 'functions/_date_picker.dart';
 import 'functions/bottomDaysSetting.dart';
 import 'functions/weight_progress_card.dart';
 
-enum updateState { Plus, Even, Minus }
+enum updateStatus { Plus, Even, Minus }
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -25,10 +27,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final DateTime _baseDate = DateTime.now();
   DateTime _startDate = DateTime.utc(2022, 2, 8);
 
+  // 임의의 코드
+  final random = Random();
+
   List<String> options = ["Week", "2 Weeks", "Month", "Custom"];
   String selectedOption = "Week";
-  String showingOption = "Week";
+  String showingOption = "SELECT";
   bool isCustom = false;
+
+  var totalWeights = new List<int>.filled(6, 0);
+  var updateWeights = new List<int>.filled(6, 0);
+  List<updateStatus> updateStatuses = [
+    updateStatus.Even,
+    updateStatus.Even,
+    updateStatus.Even,
+    updateStatus.Even,
+    updateStatus.Even,
+    updateStatus.Minus
+  ];
 
   late RSizes s;
   late RGaps g;
@@ -65,6 +81,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             options: options,
             initialValue: selectedOption,
             onSelected: (value, isCurrentCustom) {
+              _updateNumbers(value);
               setState(() {
                 selectedOption = isCurrentCustom ? "Custom" : value;
                 showingOption = value;
@@ -75,6 +92,76 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
       },
     );
+  }
+
+  void _updateNumbers(String option) {
+    switch (option) {
+      case "Week":
+        totalWeights = [2000, 750, 2580, 650, 1200, 640];
+        updateWeights = [200, 50, 0, 75, 25, 30];
+        updateStatuses = [
+          updateStatus.Minus,
+          updateStatus.Plus,
+          updateStatus.Even,
+          updateStatus.Plus,
+          updateStatus.Plus,
+          updateStatus.Minus
+        ];
+        break;
+
+      case "2 Weeks":
+        totalWeights = [4800, 1200, 2580, 1400, 2500, 1200];
+        updateWeights = [150, 150, 100, 0, 50, 100];
+        updateStatuses = [
+          updateStatus.Plus,
+          updateStatus.Minus,
+          updateStatus.Minus,
+          updateStatus.Even,
+          updateStatus.Plus,
+          updateStatus.Minus
+        ];
+        break;
+
+      case "Month":
+        totalWeights = [9900, 3000, 5000, 2890, 5100, 2000];
+        updateWeights = [100, 90, 0, 0, 100, 20];
+        updateStatuses = [
+          updateStatus.Minus,
+          updateStatus.Plus,
+          updateStatus.Even,
+          updateStatus.Even,
+          updateStatus.Minus,
+          updateStatus.Plus
+        ];
+        break;
+
+      default:
+        totalWeights = [
+          (random.nextInt(50) + 1) * 10,
+          (random.nextInt(50) + 1) * 10,
+          (random.nextInt(50) + 1) * 10,
+          (random.nextInt(50) + 1) * 10,
+          (random.nextInt(50) + 1) * 10,
+          (random.nextInt(50) + 1) * 10
+        ];
+        updateWeights = [
+          (random.nextInt(4) + 1) * 10,
+          (random.nextInt(4) + 1) * 10,
+          (random.nextInt(4) + 1) * 10,
+          (random.nextInt(4) + 1) * 10,
+          (random.nextInt(4) + 1) * 10,
+          (random.nextInt(4) + 1) * 10
+        ];
+        updateStatuses = [
+          updateStatus.Minus,
+          updateStatus.Plus,
+          updateStatus.Minus,
+          updateStatus.Plus,
+          updateStatus.Minus,
+          updateStatus.Plus
+        ];
+        break;
+    }
   }
 
   @override
@@ -171,122 +258,124 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                   g.vr03(),
-                  Container(
-                    height: s.hrSize60(),
-                    width: s.maxWidth(),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: custom_colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          offset: const Offset(0, 5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(
-                              s.wrSize03(), s.hrSize03(), s.wrSize03(), 0),
-                          child: Column(
-                            children: [
-                              Center(
-                                child: GestureDetector(
-                                  onTap: _showOptions,
-                                  child: Container(
-                                    width: isCustom
-                                        ? s.wrSize50() + s.wrSize20()
-                                        : s.wrSize25(),
-                                    height: s.hrSize05(),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: custom_colors.besportsGreen,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          offset: const Offset(0, 5),
-                                          blurRadius: 10,
+                  Expanded(
+                    child: Container(
+                      width: s.maxWidth(),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: custom_colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            offset: const Offset(0, 5),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(
+                                s.wrSize03(), s.hrSize03(), s.wrSize03(), 0),
+                            child: Column(
+                              children: [
+                                Center(
+                                  child: GestureDetector(
+                                    onTap: _showOptions,
+                                    child: Container(
+                                      width: isCustom
+                                          ? s.wrSize50() + s.wrSize20()
+                                          : s.wrSize25(),
+                                      height: s.hrSize05(),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: custom_colors.besportsGreen,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.2),
+                                            offset: const Offset(0, 5),
+                                            blurRadius: 10,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          showingOption,
+                                          style: const TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w600,
+                                              color: custom_colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                g.vr005(),
+                                SizedBox(
+                                  height: s.hrSize50(),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        weight_progress_card(
+                                          g: g,
+                                          s: s,
+                                          workoutName: "Bench Press",
+                                          UpDownEven: updateStatuses[0],
+                                          totalWeights: totalWeights[0],
+                                          updateWeights: updateWeights[0],
+                                        ),
+                                        weight_progress_card(
+                                          g: g,
+                                          s: s,
+                                          workoutName: "Shoulder Press",
+                                          UpDownEven: updateStatuses[1],
+                                          totalWeights: totalWeights[1],
+                                          updateWeights: updateWeights[1],
+                                        ),
+                                        weight_progress_card(
+                                          g: g,
+                                          s: s,
+                                          workoutName: "Squat",
+                                          UpDownEven: updateStatuses[2],
+                                          totalWeights: totalWeights[2],
+                                          updateWeights: updateWeights[2],
+                                        ),
+                                        weight_progress_card(
+                                          g: g,
+                                          s: s,
+                                          workoutName: "Lat Pull Down",
+                                          UpDownEven: updateStatuses[3],
+                                          totalWeights: totalWeights[3],
+                                          updateWeights: updateWeights[3],
+                                        ),
+                                        weight_progress_card(
+                                          g: g,
+                                          s: s,
+                                          workoutName: "Cable Crossover",
+                                          UpDownEven: updateStatuses[4],
+                                          totalWeights: totalWeights[4],
+                                          updateWeights: updateWeights[4],
+                                        ),
+                                        weight_progress_card(
+                                          g: g,
+                                          s: s,
+                                          workoutName: "Pec Deck Fly",
+                                          UpDownEven: updateStatuses[5],
+                                          totalWeights: totalWeights[5],
+                                          updateWeights: updateWeights[5],
                                         ),
                                       ],
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        showingOption,
-                                        style: const TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w600,
-                                            color: custom_colors.white),
-                                      ),
-                                    ),
                                   ),
                                 ),
-                              ),
-                              g.vr005(),
-                              SizedBox(
-                                height: s.hrSize50(),
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      weight_progress_card(
-                                        g: g,
-                                        s: s,
-                                        workoutName: "Bench Press",
-                                        UpDownEven: updateState.Plus,
-                                        totalWeights: 70,
-                                        updateWeights: 15,
-                                      ),
-                                      weight_progress_card(
-                                        g: g,
-                                        s: s,
-                                        workoutName: "Shoulder Press",
-                                        UpDownEven: updateState.Minus,
-                                        totalWeights: 90,
-                                        updateWeights: 10,
-                                      ),
-                                      weight_progress_card(
-                                        g: g,
-                                        s: s,
-                                        workoutName: "Squat",
-                                        UpDownEven: updateState.Even,
-                                        totalWeights: 120,
-                                        updateWeights: 0,
-                                      ),
-                                      weight_progress_card(
-                                        g: g,
-                                        s: s,
-                                        workoutName: "Lat Pull Down",
-                                        UpDownEven: updateState.Minus,
-                                        totalWeights: 100,
-                                        updateWeights: 20,
-                                      ),
-                                      weight_progress_card(
-                                        g: g,
-                                        s: s,
-                                        workoutName: "Cable Crossover",
-                                        UpDownEven: updateState.Plus,
-                                        totalWeights: 70,
-                                        updateWeights: 10,
-                                      ),
-                                      weight_progress_card(
-                                        g: g,
-                                        s: s,
-                                        workoutName: "Pec Deck Fly",
-                                        UpDownEven: updateState.Minus,
-                                        totalWeights: 20,
-                                        updateWeights: 40,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ],
