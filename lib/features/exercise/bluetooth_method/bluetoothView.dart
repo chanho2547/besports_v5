@@ -60,11 +60,11 @@ class _BluetoothScreenState extends State<BluetoothScreen>
           _showRestTimeSheet();
           setState(() {
             viewModel?.minusSetCount();
-            _setMessage = "${viewModel?.getSetCount()} SET 남음";
+            _setMessage = "${viewModel?.setCount} SET 남음";
 
-            if (viewModel?.getSetCount() == 0) {
+            if (viewModel?.setCount == 0) {
               _setMessage = "운동 종료";
-              viewModel?.setCountSet(3);
+              viewModel?.setCountSet = 3;
               viewModel!.disconnect();
               _navigateToHome();
             }
@@ -75,13 +75,13 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   }
 
   void onCloseTap() {
-    viewModel?.setRestState(false);
+    viewModel?.setRestState = false;
     viewModel?.writeDataToDevice("\$wr;");
     Navigator.of(context).pop();
   }
 
   void _showRestTimeSheet() async {
-    viewModel?.setRestState(true);
+    viewModel?.setRestState = true;
     int start = 10;
 
     // 시간이 변화할 때마다 이 Stream에서 이벤트를 내보냅니다.
@@ -206,7 +206,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                   title: Text('Set ${index + 1}'),
                   onTap: () {
                     setState(() {
-                      viewModel?.setCountSet(index + 1);
+                      viewModel?.setCountSet = index + 1;
                     });
                     Navigator.pop(context);
                   },
@@ -226,7 +226,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     print("0초 지남, 홈 화면으로 이동 시도중");
     //goRouter.go("/home");
     HapticFeedback.lightImpact(); // 햅틱 피드백 호출
-    viewModel?.setCountSet(4);
+    viewModel?.setCountSet = 4;
     viewModel?.dispose();
     print("viewModel.dispose");
     Navigator.pop(context);
@@ -276,7 +276,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             ),
                             onPressed: () {
                               // 뒤로가기 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
-                              viewModel?.setCountSet(4);
+                              viewModel?.setCountSet = 4;
                               viewModel?.disconnect();
                               viewModel?.dispose();
                               Navigator.pop(context);
