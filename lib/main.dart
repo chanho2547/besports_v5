@@ -33,6 +33,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
+  static bool isModal = false;
   void _readNFC() async {
     try {
       bool isAvailable = await NfcManager.instance.isAvailable();
@@ -61,22 +62,24 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   void _showNFCModal(BuildContext context, String message) {
-    HapticFeedback.vibrate; // 햅틱 피드백 호출
-    showTopModal(
-      context: context,
-      builder: (builder) {
-        return FractionallySizedBox(
-          heightFactor: 0.85,
-          alignment: Alignment.topCenter,
-          child: ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-            child: BluetoothScreen(
-              addr: message,
+    if (!isModal) {
+      HapticFeedback.vibrate; // 햅틱 피드백 호출
+      showTopModal(
+        context: context,
+        builder: (builder) {
+          return FractionallySizedBox(
+            heightFactor: 0.85,
+            alignment: Alignment.topCenter,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+              child: BluetoothScreen(
+                addr: message,
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    }
   }
 
   @override

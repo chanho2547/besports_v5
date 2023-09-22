@@ -1,3 +1,4 @@
+import 'package:besports_v5/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:async';
@@ -35,6 +36,7 @@ class BluetoothViewModel {
     disconnect();
     _debounceTimer?.cancel();
     _scanSubscription?.cancel();
+    MyHomePageState.isModal = true;
 
     countNotifier.value = 5; // 카운터 초기화
     connectedDevices.clear(); // 연결된 장치 목록 초기화
@@ -177,6 +179,7 @@ class BluetoothViewModel {
 
   // dispose 메서드
   void dispose() {
+    MyHomePageState.isModal = false;
     print('모델이 해제되었습니다.');
     disconnect(); // 자원 해제 추가
     _debounceTimer?.cancel();
