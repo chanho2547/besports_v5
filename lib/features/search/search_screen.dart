@@ -18,12 +18,12 @@ class _SearchScreenState extends State<SearchScreen> {
   String workout_name = 'WORKOUT';
 
   final List<String> workoutsImages = [
-    'Images/bench_press.jpg',
-    'Images/shoulder_press.jpg',
-    'Images/squat.jpg',
-    'Images/lat_pull_down.jpg',
-    'Images/cable_crossover.jpg',
-    'Images/pec_deck_fly.jpg',
+    'Images/bench_press.png',
+    'Images/shoulder_press.png',
+    'Images/squat.png',
+    'Images/lat_pull_down.png',
+    'Images/cable_crossover.png',
+    'Images/pec_deck_fly.png',
   ];
   final List<String> workouts = [
     "BENCH PRESS",
