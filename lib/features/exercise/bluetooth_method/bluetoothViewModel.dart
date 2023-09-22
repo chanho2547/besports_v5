@@ -34,6 +34,7 @@ class BluetoothViewModel {
 
   int get count => _count;
   int get setCount => _setCount;
+  bool get isRset => _isRest;
   set setCountSet(int value) => _setCount = value;
   set setRestState(bool isRest) => _isRest = isRest;
   void minusSetCount() {
@@ -43,7 +44,7 @@ class BluetoothViewModel {
   // 초기화 메서드
   void initialize() async {
     // 이전 연결/스캔 구독 및 타이머 해제
-    disconnect();
+    _disconnect();
     _debounceTimer?.cancel();
     _scanSubscription?.cancel();
 
@@ -161,7 +162,7 @@ class BluetoothViewModel {
   }
 
   // 연결 해제 메서드
-  void disconnect() async {
+  void _disconnect() async {
     if (_connectionSubscription != null) {
       await _connectionSubscription!.cancel();
       _connectionSubscription = null;
@@ -178,7 +179,8 @@ class BluetoothViewModel {
 
   // dispose 메서드
   void dispose() {
-    disconnect(); // 자원 해제 추가
+    _setCount = 4;
+    _disconnect(); // 자원 해제 추가
     _debounceTimer?.cancel();
     MyHomePageState.isModal = false;
     print("isModal: false");

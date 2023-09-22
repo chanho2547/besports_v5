@@ -57,16 +57,18 @@ class _BluetoothScreenState extends State<BluetoothScreen>
         });
 
         if (_viewModel!.countNotifier.value == 0) {
-          _showRestTimeSheet();
+          if (_viewModel!.setCount > 0) {
+            _showRestTimeSheet();
+          }
           setState(() {
             _viewModel?.minusSetCount();
             _setMessage = "${_viewModel?.setCount} SET 남음";
-
+            //화면이 2개 떠서 pop을 2번
             if (_viewModel?.setCount == 0) {
               _setMessage = "운동 종료";
-              _viewModel?.setCountSet = 3;
-              _viewModel!.disconnect();
-              _navigateToHome();
+              _viewModel?.dispose();
+              Navigator.pop(context);
+              Navigator.pop(context);
             }
           });
         }
@@ -89,7 +91,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     print("0초 지남, 홈 화면으로 이동 시도중");
     //goRouter.go("/home");
     HapticFeedback.lightImpact(); // 햅틱 피드백 호출
-    _viewModel?.setCountSet = 4;
     _viewModel?.dispose();
     print("viewModel.dispose");
     Navigator.pop(context);
@@ -276,8 +277,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             ),
                             onPressed: () {
                               // 뒤로가기 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
-                              _viewModel?.setCountSet = 4;
-                              _viewModel?.disconnect();
                               _viewModel?.dispose();
                               Navigator.pop(context);
                             },
@@ -396,8 +395,9 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   @override
   void dispose() {
-    _viewModel!.dispose();
+    print("view dispose");
     _animationController.dispose();
+    _viewModel!.dispose();
     super.dispose();
   }
 }
