@@ -2,6 +2,7 @@ import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
 import 'package:besports_v5/constants/sizes.dart';
+import 'package:besports_v5/main.dart';
 import 'package:besports_v5/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,42 +32,46 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   @override
   void initState() {
-    super.initState();
-    print("BluetoothViewModel 초기화 중");
+    if (!MyHomePageState.isModal) {
+      super.initState();
+      MyHomePageState.isModal = true;
+      print("BluetoothViewModel 초기화 중");
 
-    viewModel = BluetoothViewModel(deviceAddr: widget.addr);
-    viewModel!.onNavigateToHome = _navigateToHome;
+      viewModel = BluetoothViewModel(deviceAddr: widget.addr);
+      viewModel!.onNavigateToHome = _navigateToHome;
 
-    // ViewModel 초기화
-    viewModel!.initialize();
+      // ViewModel 초기화
+      viewModel!.initialize();
 
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
+      _animationController = AnimationController(
+        duration: const Duration(milliseconds: 500),
+        vsync: this,
+      );
 
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
-    viewModel!.countNotifier.addListener(() {
-      _animationController.forward().then((_) {
-        _animationController.reverse();
-      });
-
-      if (viewModel!.countNotifier.value == 0) {
-        _showRestTimeSheet();
-        setState(() {
-          viewModel?.minusSetCount();
-          _setMessage = "${viewModel?.getSetCount()} SET 남음";
-
-          if (viewModel?.getSetCount() == 0) {
-            _setMessage = "운동 종료";
-            viewModel?.setCountSet(3);
-            viewModel!.disconnect();
-            _navigateToHome();
-          }
+      _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
+          CurvedAnimation(
+              parent: _animationController, curve: Curves.easeInOut));
+      viewModel!.countNotifier.addListener(() {
+        _animationController.forward().then((_) {
+          _animationController.reverse();
         });
-      }
-    });
+
+        if (viewModel!.countNotifier.value == 0) {
+          _showRestTimeSheet();
+          setState(() {
+            viewModel?.minusSetCount();
+            _setMessage = "${viewModel?.getSetCount()} SET 남음";
+
+            if (viewModel?.getSetCount() == 0) {
+              _setMessage = "운동 종료";
+              viewModel?.setCountSet(3);
+              viewModel!.disconnect();
+              _navigateToHome();
+            }
+          });
+        }
+      });
+    }
   }
 
   void onCloseTap() {

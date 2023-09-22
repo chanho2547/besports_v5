@@ -16,6 +16,8 @@ class BluetoothViewModel {
   int setCount = 4;
   final int _count = 5;
   bool isRest = false;
+  static int retryCount = 0; // 재시도 횟수
+  final int maxRetry = 5; // 최대 재시도 횟수
 
   ValueNotifier<String> receivedDataNotifier = ValueNotifier<String>("");
 
@@ -36,7 +38,6 @@ class BluetoothViewModel {
     disconnect();
     _debounceTimer?.cancel();
     _scanSubscription?.cancel();
-    MyHomePageState.isModal = true;
 
     countNotifier.value = 5; // 카운터 초기화
     connectedDevices.clear(); // 연결된 장치 목록 초기화
@@ -45,7 +46,6 @@ class BluetoothViewModel {
   }
 
   int get count => _count;
-
   // 장치 스캔 시작 메서드
   void _startScanning() {
     _scanSubscription = _flutterReactiveBle.scanForDevices(
@@ -99,6 +99,7 @@ class BluetoothViewModel {
     )
         .listen((connectionState) async {
       if (connectionState.connectionState == DeviceConnectionState.connected) {
+        retryCount = 0; // 연결에 성공하면 재시도 횟수 초기화
         _discoverAndSubscribe(device); // 서비스 및 캐릭터리스틱 검색 및 구독
       } else if (connectionState.connectionState ==
           DeviceConnectionState.disconnected) {
@@ -106,8 +107,15 @@ class BluetoothViewModel {
         _startScanning();
       }
     }, onError: (error) {
-      // 에러 발생 시 재스캔 시작
-      _startScanning();
+      // 에러 발생 시
+      print("Connection error: $error"); // 에러 로깅
+      if (retryCount < maxRetry) {
+        _startScanning();
+        retryCount++;
+      } else {
+        // 사용자에게 에러 알림 (구현은 여기에 추가)
+        print("Max retry attempts reached.");
+      }
     });
   }
 
@@ -179,10 +187,11 @@ class BluetoothViewModel {
 
   // dispose 메서드
   void dispose() {
-    MyHomePageState.isModal = false;
     print('모델이 해제되었습니다.');
     disconnect(); // 자원 해제 추가
     _debounceTimer?.cancel();
+    MyHomePageState.isModal = false;
+    print("isModal: false");
   }
 }
 
