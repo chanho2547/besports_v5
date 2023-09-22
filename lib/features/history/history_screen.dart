@@ -62,370 +62,366 @@ class _HistoryScreenState extends State<HistoryScreen> {
           elevation: 0,
         ),
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              height: s.maxHeight(),
-              color: custom_colors.backgroundLightBlack,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(s.wrSize01(), 0, s.wrSize01(), 0),
+      body: Stack(
+        children: [
+          Container(
+            height: s.maxHeight(),
+            color: custom_colors.backgroundLightBlack,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(s.wrSize01(), 0, s.wrSize01(), 0),
+              child: Column(
+                children: [
+                  Container(
+                    height: s.hrSize10(), // 일반적인 AppBar의 높이
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            top: s.hrSize04(),
+            left: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  isDetailsOnTop = true;
+                });
+              },
+              child: Container(
+                height: s.maxHeight(),
+                decoration: const BoxDecoration(
+                  color: custom_colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(40.0),
+                  ),
+                ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      height: s.hrSize10(), // 일반적인 AppBar의 높이
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          top: s.hrSize025(),
+                          left: s.wrSize09()), // 조금 상단으로 올린다.
+                      child: Column(
+                        children: [
+                          Text(
+                            "Details",
+                            style: TextStyle(
+                              color: custom_colors.black,
+                              fontSize: s.hrSize03(),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: s.wrSize06(),
+                        vertical: s.hrSize02(),
+                      ),
+                      child: Column(children: [
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "${_focusedDay.month}월 ${_focusedDay.day}일",
+                              style: TextStyle(
+                                fontSize: s.hrSize03(),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              "Run Time : $hours시간 $remainingMinutes분",
+                              style: TextStyle(
+                                fontSize: s.hrSize015(),
+                                fontWeight: FontWeight.w500,
+                                color: custom_colors.backgroundLightBlack,
+                              ),
+                            ),
+                            Text(
+                              "Carlorie : $calorie Kcal",
+                              style: TextStyle(
+                                fontSize: s.hrSize015(),
+                                fontWeight: FontWeight.w500,
+                                color: custom_colors.backgroundLightBlack,
+                              ),
+                            ),
+                          ],
+                        ),
+                        g.vr03(),
+                        Center(
+                          child: Image.asset(
+                            'Images/Graph.png',
+                            width: s.maxWidth(),
+                            height: s.hrSize32() + s.hrSize003(),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.circle,
+                                  color: custom_colors.besportsGreen,
+                                  size: s.hrSize015(),
+                                ),
+                                g.hr015(),
+                                Text(
+                                  '운동량',
+                                  style: TextStyle(
+                                      fontSize: s.hrSize018(),
+                                      fontWeight: FontWeight.w300,
+                                      color:
+                                          custom_colors.backgroundLightBlack),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.circle,
+                                  color: custom_colors.consumeLightGreen,
+                                  size: s.hrSize015(),
+                                ),
+                                g.hr015(),
+                                Text(
+                                  '섭취량',
+                                  style: TextStyle(
+                                      fontSize: s.hrSize018(),
+                                      fontWeight: FontWeight.w300,
+                                      color:
+                                          custom_colors.backgroundLightBlack),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ]),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            top: isDetailsOnTop ? s.hrSize70() + s.hrSize05() : s.hrSize13(),
+            left: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  isDetailsOnTop = false;
+                });
+              },
+              child: Container(
+                height: s.maxHeight(),
+                decoration: const BoxDecoration(
+                  color: custom_colors.backgroundLightBlack,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(40.0),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                          top: s.hrSize025(), left: s.wrSize09()),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "History",
+                            style: TextStyle(
+                              color: custom_colors.white,
+                              fontSize: s.hrSize03(),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          SizedBox(
+                            height: s.hrSize01(),
+                          ),
+                          Visibility(
+                            visible: !isDetailsOnTop,
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Run Time : $hours시간 $remainingMinutes분',
+                                  style: TextStyle(
+                                    fontSize: s.hrSize015(),
+                                    color: custom_colors.white,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                Text(
+                                  'Carlorie : $calorie Kcal',
+                                  style: TextStyle(
+                                    fontSize: s.hrSize015(),
+                                    color: custom_colors.white,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    g.vr01(),
+                    Column(
+                      children: [
+                        TableCalendar(
+                          firstDay: DateTime.utc(2021, 1, 1),
+                          lastDay: DateTime.utc(2030, 12, 31),
+                          focusedDay: _focusedDay,
+
+                          calendarBuilders: CalendarBuilders(
+                            todayBuilder: (context, date, _) {
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  g.vr008(),
+                                  Text('${date.day}',
+                                      style: TextStyle(
+                                        fontSize: s.hrSize02(),
+                                        fontWeight: FontWeight.w800,
+                                      ).copyWith(
+                                        color: Colors.green,
+                                      )),
+                                  g.vr001(),
+                                  Text(
+                                    'TODAY',
+                                    style: TextStyle(
+                                      fontSize: s.hrSize015(),
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
+                          ),
+
+                          selectedDayPredicate: (day) {
+                            return isSameDay(_selectedDay, day);
+                          },
+                          onDaySelected: (selectedDay, focusedDay) {
+                            setState(() {
+                              _selectedDay = selectedDay;
+                              _focusedDay = focusedDay;
+                            });
+                          },
+                          rowHeight: s.wrSize12(),
+                          headerStyle: HeaderStyle(
+                            formatButtonVisible: false,
+                            formatButtonDecoration: BoxDecoration(
+                              color: custom_colors
+                                  .backgroundDarkWhite, // 버튼의 색상을 변경
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            titleCentered:
+                                true, // If you don't want the format button
+                            titleTextStyle: TextStyle(
+                                color: custom_colors
+                                    .white, // Setting month/year text color to white
+                                fontSize: s.hrSize02(),
+                                fontWeight: FontWeight.w600),
+                            leftChevronIcon: const Icon(Icons.arrow_back_ios,
+                                color: custom_colors.white), // Left arrow color
+                            rightChevronIcon: const Icon(
+                                Icons.arrow_forward_ios,
+                                color:
+                                    custom_colors.white), // Right arrow color
+                          ),
+                          daysOfWeekStyle: DaysOfWeekStyle(
+                            weekendStyle: TextStyle(
+                                color: custom_colors.weekendRed,
+                                fontSize: s.hrSize015()),
+                            weekdayStyle: TextStyle(
+                                color: custom_colors.white,
+                                fontSize: s.hrSize015()),
+                          ),
+                          calendarStyle: CalendarStyle(
+                              // Customize the color of selected day's background
+                              selectedDecoration: BoxDecoration(
+                                color: Colors
+                                    .grey[400], // Set your desired color here
+                                shape: BoxShape
+                                    .circle, // You can use other shapes like BoxShape.rectangle
+                              ),
+                              // Customize the color of weekend days' text
+                              weekendTextStyle: TextStyle(
+                                color: custom_colors.weekendRed,
+                                fontSize: s.hrSize02(),
+                              ),
+                              // Customize the color of other days' text
+                              defaultTextStyle: TextStyle(
+                                color: custom_colors.white,
+                                fontSize: s.hrSize02(),
+                                // Set the color for other days here
+                              ),
+                              selectedTextStyle: TextStyle(
+                                color: custom_colors.black,
+                                fontSize: s.hrSize02(),
+                                fontWeight: FontWeight.w700,
+                              )
+                              // Customize other properties as needed...
+                              ),
+                          // Other options...
+                        ),
+                        g.vr06(),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _focusedDay = DateTime.now();
+                              _selectedDay = _focusedDay;
+                            });
+                          },
+                          child: Container(
+                            width: s.wrSize25(),
+                            height: s.hrSize04(),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: custom_colors.besportsGreen,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  offset: const Offset(0, 5),
+                                  blurRadius: 10,
+                                ),
+                              ],
+                            ),
+                            child: const Center(
+                              child: Text(
+                                "TODAY",
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                    color: custom_colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              top: s.hrSize07(),
-              left: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isDetailsOnTop = true;
-                  });
-                },
-                child: Container(
-                  height: s.maxHeight(),
-                  decoration: const BoxDecoration(
-                    color: custom_colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40.0),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: s.hrSize025(),
-                            left: s.wrSize09()), // 조금 상단으로 올린다.
-                        child: Column(
-                          children: [
-                            Text(
-                              "Details",
-                              style: TextStyle(
-                                color: custom_colors.black,
-                                fontSize: s.hrSize03(),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: s.wrSize06(),
-                          vertical: s.hrSize02(),
-                        ),
-                        child: Column(children: [
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${_focusedDay.month}월 ${_focusedDay.day}일",
-                                style: TextStyle(
-                                  fontSize: s.hrSize03(),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Text(
-                                "Run Time : $hours시간 $remainingMinutes분",
-                                style: TextStyle(
-                                  fontSize: s.hrSize015(),
-                                  fontWeight: FontWeight.w500,
-                                  color: custom_colors.backgroundLightBlack,
-                                ),
-                              ),
-                              Text(
-                                "Carlorie : $calorie Kcal",
-                                style: TextStyle(
-                                  fontSize: s.hrSize015(),
-                                  fontWeight: FontWeight.w500,
-                                  color: custom_colors.backgroundLightBlack,
-                                ),
-                              ),
-                            ],
-                          ),
-                          g.vr03(),
-                          Center(
-                            child: Image.asset(
-                              'Images/Graph.png',
-                              width: s.maxWidth(),
-                              height: s.hrSize32() + s.hrSize003(),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.circle,
-                                    color: custom_colors.besportsGreen,
-                                    size: s.hrSize015(),
-                                  ),
-                                  g.hr015(),
-                                  Text(
-                                    '운동량',
-                                    style: TextStyle(
-                                        fontSize: s.hrSize018(),
-                                        fontWeight: FontWeight.w300,
-                                        color:
-                                            custom_colors.backgroundLightBlack),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.circle,
-                                    color: custom_colors.consumeLightGreen,
-                                    size: s.hrSize015(),
-                                  ),
-                                  g.hr015(),
-                                  Text(
-                                    '섭취량',
-                                    style: TextStyle(
-                                        fontSize: s.hrSize018(),
-                                        fontWeight: FontWeight.w300,
-                                        color:
-                                            custom_colors.backgroundLightBlack),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ]),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              top: isDetailsOnTop ? s.hrSize70() + s.hrSize03() : s.hrSize15(),
-              left: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isDetailsOnTop = false;
-                  });
-                },
-                child: Container(
-                  height: s.maxHeight(),
-                  decoration: const BoxDecoration(
-                    color: custom_colors.backgroundLightBlack,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40.0),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: s.hrSize025(), left: s.wrSize09()),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "History",
-                              style: TextStyle(
-                                color: custom_colors.white,
-                                fontSize: s.hrSize03(),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            SizedBox(
-                              height: s.hrSize01(),
-                            ),
-                            Visibility(
-                              visible: !isDetailsOnTop,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Run Time : $hours시간 $remainingMinutes분',
-                                    style: TextStyle(
-                                      fontSize: s.hrSize015(),
-                                      color: custom_colors.white,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Carlorie : $calorie Kcal',
-                                    style: TextStyle(
-                                      fontSize: s.hrSize015(),
-                                      color: custom_colors.white,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      g.vr01(),
-                      Column(
-                        children: [
-                          TableCalendar(
-                            firstDay: DateTime.utc(2021, 1, 1),
-                            lastDay: DateTime.utc(2030, 12, 31),
-                            focusedDay: _focusedDay,
-                            calendarBuilders: CalendarBuilders(
-                              todayBuilder: (context, date, _) {
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    g.vr008(),
-                                    Text('${date.day}',
-                                        style: TextStyle(
-                                          fontSize: s.hrSize025(),
-                                          fontWeight: FontWeight.w800,
-                                        ).copyWith(
-                                          color: custom_colors
-                                              .backgroundLightBlack,
-                                        )),
-                                    g.vr001(),
-                                    Text(
-                                      'TODAY',
-                                      style: TextStyle(
-                                        fontSize: s.hrSize015(),
-                                        color:
-                                            custom_colors.backgroundLightBlack,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    )
-                                  ],
-                                );
-                              },
-                            ),
-
-                            selectedDayPredicate: (day) {
-                              return isSameDay(_selectedDay, day);
-                            },
-                            onDaySelected: (selectedDay, focusedDay) {
-                              setState(() {
-                                _selectedDay = selectedDay;
-                                _focusedDay = focusedDay;
-                              });
-                            },
-                            rowHeight: s.wrSize12(),
-                            headerStyle: HeaderStyle(
-                              formatButtonVisible: false,
-                              formatButtonDecoration: BoxDecoration(
-                                color: custom_colors
-                                    .todaybuttonAmber, // 버튼의 색상을 변경
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              titleCentered:
-                                  true, // If you don't want the format button
-                              titleTextStyle: TextStyle(
-                                  color: custom_colors
-                                      .white, // Setting month/year text color to white
-                                  fontSize: s.hrSize02(),
-                                  fontWeight: FontWeight.w600),
-                              leftChevronIcon: const Icon(Icons.arrow_back_ios,
-                                  color:
-                                      custom_colors.white), // Left arrow color
-                              rightChevronIcon: const Icon(
-                                  Icons.arrow_forward_ios,
-                                  color:
-                                      custom_colors.white), // Right arrow color
-                            ),
-                            daysOfWeekStyle: DaysOfWeekStyle(
-                              weekendStyle: TextStyle(
-                                  color: custom_colors.weekendRed,
-                                  fontSize: s.hrSize015()),
-                              weekdayStyle: TextStyle(
-                                  color: custom_colors.white,
-                                  fontSize: s.hrSize015()),
-                            ),
-                            calendarStyle: CalendarStyle(
-                                // Customize the color of selected day's background
-                                selectedDecoration: const BoxDecoration(
-                                  color: custom_colors
-                                      .todaybuttonAmber, // Set your desired color here
-                                  shape: BoxShape
-                                      .circle, // You can use other shapes like BoxShape.rectangle
-                                ),
-                                // Customize the color of weekend days' text
-                                weekendTextStyle: TextStyle(
-                                  color: custom_colors.weekendRed,
-                                  fontSize: s.hrSize02(),
-                                ),
-                                // Customize the color of other days' text
-                                defaultTextStyle: TextStyle(
-                                  color: custom_colors.white,
-                                  fontSize: s.hrSize02(),
-                                  // Set the color for other days here
-                                ),
-                                selectedTextStyle: TextStyle(
-                                  color: custom_colors.black,
-                                  fontSize: s.hrSize02(),
-                                  fontWeight: FontWeight.w700,
-                                )
-                                // Customize other properties as needed...
-                                ),
-                            // Other options...
-                          ),
-                          g.vr06(),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _focusedDay = DateTime.now();
-                                _selectedDay = _focusedDay;
-                              });
-                            },
-                            child: Container(
-                              width: s.wrSize25(),
-                              height: s.hrSize04(),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: custom_colors.besportsGreen,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    offset: const Offset(0, 5),
-                                    blurRadius: 10,
-                                  ),
-                                ],
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "TODAY",
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w600,
-                                      color: custom_colors.white),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
