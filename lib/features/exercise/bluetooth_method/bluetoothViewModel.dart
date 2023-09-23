@@ -69,30 +69,35 @@ class BluetoothViewModel {
   }
 
   void _discoverAndSubscribe(DiscoveredDevice device) async {
-    final services = await _flutterReactiveBle.discoverServices(device.id);
-    for (final service in services) {
-      for (final characteristic in service.characteristics) {
-        if (characteristic.isNotifiable) {
-          // 알림 활성화
-          _charToSubscribe = QualifiedCharacteristic(
-              characteristicId: characteristic.characteristicId,
-              serviceId: service.serviceId,
-              deviceId: device.id);
-          _flutterReactiveBle
-              .subscribeToCharacteristic(_charToSubscribe)
-              .listen((value) {
-            String receivedData = utf8.decode(value);
-            //_writeDataToDevice();
-            _onNewDataReceived(receivedData, device);
-          });
-        }
-        if (characteristic.isWritableWithoutResponse ||
-            characteristic.isWritableWithResponse) {
-          _charToWrite = QualifiedCharacteristic(
-              characteristicId: characteristic.characteristicId,
-              serviceId: service.serviceId,
-              deviceId: device.id);
-          writeDataToDevice("\$wr;");
+    // print("디스커버 앤드 서브스크라이브");
+    // print(device.id);
+    // print(deviceAddr);
+    final services = await _flutterReactiveBle.discoverAllServices(device.id);
+    if (services != null) {
+      for (final service in services) {
+        for (final characteristic in service.characteristics) {
+          if (characteristic.isNotifiable) {
+            // 알림 활성화
+            _charToSubscribe = QualifiedCharacteristic(
+                characteristicId: characteristic.characteristicId,
+                serviceId: service.serviceId,
+                deviceId: device.id);
+            _flutterReactiveBle
+                .subscribeToCharacteristic(_charToSubscribe)
+                .listen((value) {
+              String receivedData = utf8.decode(value);
+              //_writeDataToDevice();
+              _onNewDataReceived(receivedData, device);
+            });
+          }
+          if (characteristic.isWritableWithoutResponse ||
+              characteristic.isWritableWithResponse) {
+            _charToWrite = QualifiedCharacteristic(
+                characteristicId: characteristic.characteristicId,
+                serviceId: service.serviceId,
+                deviceId: device.id);
+            writeDataToDevice("\$wr;");
+          }
         }
       }
     }
@@ -119,7 +124,6 @@ class BluetoothViewModel {
       print("Connection error: $error"); // 에러 로깅
       if (_retryCount < _maxRetry) {
         _startScanning();
-        _retryCount++;
       } else {
         // 사용자에게 에러 알림 (구현은 여기에 추가)
         print("Max retry attempts reached.");
@@ -129,6 +133,10 @@ class BluetoothViewModel {
 
   // 디바운스된 카운터 업데이트 메서드
   void _updateCount(DiscoveredDevice device) async {
+    print("업데이트 카운트");
+    print(device.id);
+    print(deviceAddr.substring(3));
+
     if (!_isRest) {
       // rest 상태가 아닐 때만 카운트 감소
       countNotifier.value--;
