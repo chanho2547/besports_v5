@@ -97,8 +97,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _updateNumbers(String option) {
     switch (option) {
       case "Week":
-        totalWeights = [2000, 750, 2580, 650, 1200, 640];
-        updateWeights = [200, 50, 0, 75, 25, 30];
+        totalWeights = [50, 80, 100, 65, 120, 64];
+        updateWeights = [10, 10, 0, 15, 25, 30];
         updateStatuses = [
           updateStatus.Minus,
           updateStatus.Plus,
@@ -110,8 +110,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         break;
 
       case "2 Weeks":
-        totalWeights = [4800, 1200, 2580, 1400, 2500, 1200];
-        updateWeights = [150, 150, 100, 0, 50, 100];
+        totalWeights = [60, 80, 100, 140, 60, 70];
+        updateWeights = [5, 5, 10, 5, 5, 10];
         updateStatuses = [
           updateStatus.Plus,
           updateStatus.Minus,
@@ -123,8 +123,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         break;
 
       case "Month":
-        totalWeights = [9900, 3000, 5000, 2890, 5100, 2000];
-        updateWeights = [100, 90, 0, 0, 100, 20];
+        totalWeights = [60, 60, 50, 80, 100, 20];
+        updateWeights = [10, 10, 0, 0, 10, 20];
         updateStatuses = [
           updateStatus.Minus,
           updateStatus.Plus,
