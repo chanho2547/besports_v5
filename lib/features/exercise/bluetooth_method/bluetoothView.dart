@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
@@ -7,6 +10,7 @@ import 'package:besports_v5/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
 import 'bluetoothViewModel.dart'; // BluetoothViewModel 위치로 변경하세요.
 
@@ -32,6 +36,10 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   late RGaps g;
 
   String _setMessage = "START!!"; // 초기 메시지는 빈 문자열
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  Timer? _timer;
 
   @override
   void initState() {
@@ -79,13 +87,16 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
         if (_viewModel!.countNotifier.value == 0) {
           if (_viewModel!.setCount > 0) {
+            flutterTts.speak('휴식 시작'); // TTS로 한국어 단어 재생
             _showRestTimeSheet();
           }
           setState(() {
             _viewModel?.minusSetCount();
             _setMessage = "${_viewModel?.setCount} SET 남음";
+            //flutterTts.speak("세트 ${_viewModel?.setCount} 남음"); // TTS로 한국어 단어 재생
             //화면이 2개 떠서 pop을 2번
             if (_viewModel?.setCount == 0) {
+              //flutterTts.speak("마지막 세트 종료"); // TTS로 한국어 단어 재생
               _setMessage = "운동 종료";
               _viewModel?.dispose();
               Navigator.pop(context);
@@ -95,11 +106,14 @@ class _BluetoothScreenState extends State<BluetoothScreen>
         }
       });
     }
+    // TTS 초기화
+    flutterTts.setLanguage("ko-KR");
   }
 
   void _onCloseTap() {
     _viewModel?.setRestState = false;
     _viewModel?.writeDataToDevice("\$wr;");
+    flutterTts.speak('휴식 종료');
     Navigator.of(context).pop();
   }
 
@@ -115,6 +129,39 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     _viewModel?.dispose();
     print("viewModel.dispose");
     Navigator.pop(context);
+  }
+
+  int _lastNumber = 1;
+
+  String numberToKoreanWord(int number) {
+    if (number == 0 && _lastNumber == 0) {
+      // 이전 번호도 0이었으므로 아무것도 하지 않음
+      return '';
+    }
+
+    _lastNumber = number; // 마지막 번호를 업데이트
+
+    switch (number) {
+      case 1:
+        return '하나';
+      case 2:
+        return '둘';
+      case 3:
+        return '셋';
+      case 4:
+        return '넷';
+      case 5:
+        return '다섯';
+      case 0:
+        // 벨소리 재생을 위한 audioplayer
+        final player = AudioPlayer();
+        player.setVolume(0.4); // 볼륨 설정, 최대 1.0
+        player.play(AssetSource('../sounds/bell_sound.mp3')); // 벨소리 재생
+        return '';
+      // 이외의 상황에서는 빈 문자열을 반환
+      default:
+        return '';
+    }
   }
 
   void _showRestTimeSheet() async {
@@ -381,38 +428,46 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             },
                             child: ValueListenableBuilder<int>(
                               valueListenable: _viewModel!.countNotifier,
-                              builder: (context, count, _) => Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Center(
-                                    child: SizedBox(
-                                      width: 200,
-                                      height: 200,
-                                      child: CircularProgressIndicator(
-                                        value: (5 - count) /
-                                            5, // count 값에 따라 진행률이 변경됩니다. 5는 최대 카운트 값입니다.
-                                        strokeWidth: 10,
-                                        backgroundColor: Colors
-                                            .grey.shade400, // 미완료 부분의 색상을 설정
-                                        valueColor:
-                                            const AlwaysStoppedAnimation<Color>(
-                                          Colors.green,
-                                        ), // 완료 부분의 색상을 설정
+                              builder: (context, count, _) {
+                                String koreanWord =
+                                    numberToKoreanWord(5 - count);
+
+                                // TTS로 한국어 단어 재생
+                                flutterTts.speak(koreanWord);
+                                return Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Center(
+                                      child: SizedBox(
+                                        width: 200,
+                                        height: 200,
+                                        child: CircularProgressIndicator(
+                                          value: (5 - count) /
+                                              5, // count 값에 따라 진행률이 변경됩니다. 5는 최대 카운트 값입니다.
+                                          strokeWidth: 10,
+                                          backgroundColor: Colors
+                                              .grey.shade400, // 미완료 부분의 색상을 설정
+                                          valueColor:
+                                              const AlwaysStoppedAnimation<
+                                                  Color>(
+                                            Colors.green,
+                                          ), // 완료 부분의 색상을 설정
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Center(
-                                    child: Text(
-                                      '${5 - count}',
-                                      style: const TextStyle(
-                                        fontSize: 100,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
+                                    Center(
+                                      child: Text(
+                                        '${5 - count}',
+                                        style: const TextStyle(
+                                          fontSize: 100,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                );
+                              },
                             ),
                           ),
                           g.vr05(), // 간격을 주기 위한 코드
@@ -437,6 +492,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     print("view dispose");
     _animationController.dispose();
     _viewModel!.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 }

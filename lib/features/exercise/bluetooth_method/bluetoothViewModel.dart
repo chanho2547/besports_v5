@@ -98,11 +98,10 @@ class BluetoothViewModel {
               .subscribeToCharacteristic(_charToSubscribe)
               .listen((value) {
             print("this is value : $value");
+
             String receivedData = utf8.decode(value);
             _onNewDataReceived(receivedData, device);
           });
-
-          print("after subscribe2");
         }
         if (characteristic.isWritableWithoutResponse ||
             characteristic.isWritableWithResponse) {

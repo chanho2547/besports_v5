@@ -23,7 +23,10 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   final DateTime _baseDate = DateTime.now();
   DateTime _startDate = DateTime.utc(2022, 2, 8);
 
@@ -48,11 +51,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   late RSizes s;
   late RGaps g;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _showDatePicker(BuildContext context) {
     DatePicker.showDatePicker(
@@ -166,6 +164,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     s = RSizes(
         MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
     g = RGaps(
