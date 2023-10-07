@@ -392,6 +392,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                         builder: (context, receivedData, _) => Center(
                           child: Text(
                             "${receivedData.replaceAll("\$r", '').replaceAll(';', '')} KG",
+
                             textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
                             style: const TextStyle(
                               fontSize: Sizes.size52,
