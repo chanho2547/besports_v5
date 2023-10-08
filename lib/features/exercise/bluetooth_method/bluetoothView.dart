@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
@@ -30,20 +28,21 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   late Animation<double> _pulseAnimation;
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
+
+  final FlutterTts flutterTts = FlutterTts();
+
   final int _count = 0;
 
+  int _lastNumber = 1;
   late RSizes s;
   late RGaps g;
 
   String _setMessage = "START!!"; // 초기 메시지는 빈 문자열
 
-  final FlutterTts flutterTts = FlutterTts();
-
-  Timer? _timer;
-
   @override
   void initState() {
     super.initState();
+    flutterTts.setLanguage("ko-KR");
 
     _initAnimationController();
     _checkModal();
@@ -52,6 +51,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     _initPulseAnimation();
   }
 
+//펄스 애니메이션 init
   void _initPulseAnimation() {
     _pulseAnimation =
         Tween<double>(begin: 1.0, end: 1.03).animate(CurvedAnimation(
@@ -76,49 +76,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     if (!MyHomePageState.isModal) {
       MyHomePageState.isModal = true;
       print("BluetoothViewModel 초기화 중");
-
-      _viewModel = BluetoothViewModel(deviceAddr: widget.addr);
-      _viewModel!.onNavigateToHome = _navigateToHome;
-
-      // ViewModel 초기화
-      _viewModel!.initialize();
-
-      // _animationController = AnimationController(
-      //   duration: const Duration(milliseconds: 500),
-      //   vsync: this,
-      // );
-
-      _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
-          CurvedAnimation(
-              parent: _animationController, curve: Curves.easeInOut));
-      _viewModel!.countNotifier.addListener(() {
-        _animationController.forward().then((_) {
-          _animationController.reverse();
-        });
-
-        if (_viewModel!.countNotifier.value == 0) {
-          if (_viewModel!.setCount > 0) {
-            flutterTts.speak('휴식 시작'); // TTS로 한국어 단어 재생
-            _showRestTimeSheet();
-          }
-          setState(() {
-            _viewModel?.minusSetCount();
-            _setMessage = "${_viewModel?.setCount} SET 남음";
-            //flutterTts.speak("세트 ${_viewModel?.setCount} 남음"); // TTS로 한국어 단어 재생
-            //화면이 2개 떠서 pop을 2번
-            if (_viewModel?.setCount == 0) {
-              //flutterTts.speak("마지막 세트 종료"); // TTS로 한국어 단어 재생
-              _setMessage = "운동 종료";
-              _viewModel?.dispose();
-              Navigator.pop(context);
-              Navigator.pop(context);
-            }
-          });
-        }
-      });
     }
-    // TTS 초기화
-    flutterTts.setLanguage("ko-KR");
   }
 
   //viewModel초기화
@@ -126,6 +84,37 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     _viewModel = BluetoothViewModel(deviceAddr: widget.addr);
     _viewModel!.onNavigateToHome = _navigateToHome;
     _viewModel!.initialize();
+  }
+
+  String numberToKoreanWord(int number) {
+    if (number == 0 && _lastNumber == 0) {
+      // 이전 번호도 0이었으므로 아무것도 하지 않음
+      return '';
+    }
+
+    _lastNumber = number; // 마지막 번호를 업데이트
+
+    switch (number) {
+      case 1:
+        return '하나';
+      case 2:
+        return '둘';
+      case 3:
+        return '셋';
+      case 4:
+        return '넷';
+      case 5:
+        return '다섯';
+      case 0:
+        // 벨소리 재생을 위한 audioplayer
+        final player = AudioPlayer();
+        player.setVolume(0.4); // 볼륨 설정, 최대 1.0
+        player.play(AssetSource('../sounds/bell_sound.mp3')); // 벨소리 재생
+        return '';
+      // 이외의 상황에서는 빈 문자열을 반환
+      default:
+        return '';
+    }
   }
 
   //count 변경 감지
@@ -157,7 +146,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       if (_viewModel?.setCount == 0) {
         _setMessage = "운동 종료";
         _viewModel?.dispose();
-        Navigator.pop(context);
         Navigator.pop(context);
       }
     });
@@ -245,39 +233,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     _viewModel?.dispose();
     print("viewModel.dispose");
     Navigator.pop(context);
-  }
-
-  int _lastNumber = 1;
-
-  String numberToKoreanWord(int number) {
-    if (number == 0 && _lastNumber == 0) {
-      // 이전 번호도 0이었으므로 아무것도 하지 않음
-      return '';
-    }
-
-    _lastNumber = number; // 마지막 번호를 업데이트
-
-    switch (number) {
-      case 1:
-        return '하나';
-      case 2:
-        return '둘';
-      case 3:
-        return '셋';
-      case 4:
-        return '넷';
-      case 5:
-        return '다섯';
-      case 0:
-        // 벨소리 재생을 위한 audioplayer
-        final player = AudioPlayer();
-        player.setVolume(0.4); // 볼륨 설정, 최대 1.0
-        player.play(AssetSource('../sounds/bell_sound.mp3')); // 벨소리 재생
-        return '';
-      // 이외의 상황에서는 빈 문자열을 반환
-      default:
-        return '';
-    }
   }
 
   void _showRestTimeSheet() async {
@@ -508,7 +463,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                         builder: (context, receivedData, _) => Center(
                           child: Text(
                             "${receivedData.replaceAll("\$r", '').replaceAll(';', '')} KG",
-
                             textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
                             style: const TextStyle(
                               fontSize: Sizes.size52,
@@ -546,11 +500,9 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             child: ValueListenableBuilder<int>(
                               valueListenable: _viewModel!.countNotifier,
                               builder: (context, count, _) {
-                                String koreanWord =
+                                String KoreanWord =
                                     numberToKoreanWord(5 - count);
-
-                                // TTS로 한국어 단어 재생
-                                flutterTts.speak(koreanWord);
+                                flutterTts.speak(KoreanWord);
                                 return Stack(
                                   alignment: Alignment.center,
                                   children: [
@@ -609,7 +561,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     print("view dispose");
     _animationController.dispose();
     _viewModel!.dispose();
-    _timer?.cancel();
     super.dispose();
   }
 }
