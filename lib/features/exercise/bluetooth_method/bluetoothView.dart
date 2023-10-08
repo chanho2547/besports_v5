@@ -35,67 +35,146 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   @override
   void initState() {
-    // 부드러운 애니메이션을 위한 코드
+    super.initState();
+
+    _initAnimationController();
+    _checkModal();
+    _initializeViewModel();
+    _listenForCountChanges();
+    _initPulseAnimation();
+  }
+
+  void _initPulseAnimation() {
+    _pulseAnimation =
+        Tween<double>(begin: 1.0, end: 1.03).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  //애니메이션 컨트롤러 초기화
+  void _initAnimationController() {
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500), // 원하는 지속 시간을 설정하세요.
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    // 애니메이션을 위한 리스너
     _animationController.addListener(() {
       setState(() {});
     });
+  }
 
-    _progressAnimation(double count) => Tween<double>(
-          begin: 5 - count,
-          end: 5 - count,
-        ).animate(CurvedAnimation(
-          parent: _animationController,
-          curve: Curves.easeInOut,
-        ));
+  //모달 확인
+  void _checkModal() {
     if (!MyHomePageState.isModal) {
-      super.initState();
-
       MyHomePageState.isModal = true;
       print("BluetoothViewModel 초기화 중");
-
-      _viewModel = BluetoothViewModel(deviceAddr: widget.addr);
-      _viewModel!.onNavigateToHome = _navigateToHome;
-
-      // ViewModel 초기화
-      _viewModel!.initialize();
-
-      // _animationController = AnimationController(
-      //   duration: const Duration(milliseconds: 500),
-      //   vsync: this,
-      // );
-
-      _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
-          CurvedAnimation(
-              parent: _animationController, curve: Curves.easeInOut));
-      _viewModel!.countNotifier.addListener(() {
-        _animationController.forward().then((_) {
-          _animationController.reverse();
-        });
-
-        if (_viewModel!.countNotifier.value == 0) {
-          if (_viewModel!.setCount > 0) {
-            _showRestTimeSheet();
-          }
-          setState(() {
-            _viewModel?.minusSetCount();
-            _setMessage = "${_viewModel?.setCount} SET 남음";
-            //화면이 2개 떠서 pop을 2번
-            if (_viewModel?.setCount == 0) {
-              _setMessage = "운동 종료";
-              _viewModel?.dispose();
-              Navigator.pop(context);
-              Navigator.pop(context);
-            }
-          });
-        }
-      });
     }
   }
+
+  //viewModel초기화
+  void _initializeViewModel() {
+    _viewModel = BluetoothViewModel(deviceAddr: widget.addr);
+    _viewModel!.onNavigateToHome = _navigateToHome;
+    _viewModel!.initialize();
+  }
+
+  //count 변경 감지
+  void _listenForCountChanges() {
+    _viewModel!.countNotifier.addListener(() {
+      _animateCountChange();
+
+      if (_viewModel!.countNotifier.value == 0) {
+        _handleCountZero();
+      }
+    });
+  }
+
+  //count시 애니메이션 처리
+  void _animateCountChange() {
+    _animationController.forward().then((_) {
+      _animationController.reverse();
+    });
+  }
+
+  //count가 0일때 처리
+  void _handleCountZero() {
+    if (_viewModel!.setCount > 0) {
+      _showRestTimeSheet();
+    }
+    setState(() {
+      _viewModel?.minusSetCount();
+      _setMessage = "${_viewModel?.setCount} SET 남음";
+      if (_viewModel?.setCount == 0) {
+        _setMessage = "운동 종료";
+        _viewModel?.dispose();
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  // void initState() {
+  //   // 부드러운 애니메이션을 위한 코드
+  //   _animationController = AnimationController(
+  //     duration: const Duration(milliseconds: 500), // 원하는 지속 시간을 설정하세요.
+  //     vsync: this,
+  //   );
+  //   // 애니메이션을 위한 리스너
+  //   _animationController.addListener(() {
+  //     setState(() {});
+  //   });
+
+  //   _progressAnimation(double count) => Tween<double>(
+  //         begin: 5 - count,
+  //         end: 5 - count,
+  //       ).animate(CurvedAnimation(
+  //         parent: _animationController,
+  //         curve: Curves.easeInOut,
+  //       ));
+  //   if (!MyHomePageState.isModal) {
+  //     super.initState();
+
+  //     MyHomePageState.isModal = true;
+  //     print("BluetoothViewModel 초기화 중");
+
+  //     _viewModel = BluetoothViewModel(deviceAddr: widget.addr);
+  //     _viewModel!.onNavigateToHome = _navigateToHome;
+
+  //     // ViewModel 초기화
+  //     _viewModel!.initialize();
+
+  //     // _animationController = AnimationController(
+  //     //   duration: const Duration(milliseconds: 500),
+  //     //   vsync: this,
+  //     // );
+
+  //     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
+  //         CurvedAnimation(
+  //             parent: _animationController, curve: Curves.easeInOut));
+  //     _viewModel!.countNotifier.addListener(() {
+  //       _animationController.forward().then((_) {
+  //         _animationController.reverse();
+  //       });
+
+  //       if (_viewModel!.countNotifier.value == 0) {
+  //         if (_viewModel!.setCount > 0) {
+  //           _showRestTimeSheet();
+  //         }
+  //         setState(() {
+  //           _viewModel?.minusSetCount();
+  //           _setMessage = "${_viewModel?.setCount} SET 남음";
+  //           //화면이 2개 떠서 pop을 2번
+  //           if (_viewModel?.setCount == 0) {
+  //             _setMessage = "운동 종료";
+  //             _viewModel?.dispose();
+  //             Navigator.pop(context);
+  //             Navigator.pop(context);
+  //           }
+  //         });
+  //       }
+  //     });
+  //   }
+  // }
 
   void _onCloseTap() {
     _viewModel?.setRestState = false;

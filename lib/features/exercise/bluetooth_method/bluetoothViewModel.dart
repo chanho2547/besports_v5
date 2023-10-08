@@ -102,6 +102,17 @@ class BluetoothViewModel {
     }
   }
 
+  //오류처리 코드
+  void _retryConnection() {
+    if (_retryCount < _maxRetry) {
+      _startScanning();
+      _retryCount++;
+    } else {
+      // 사용자에게 에러 알림 (구현은 여기에 추가)
+      print("Max retry attempts reached.");
+    }
+  }
+
   // 디바이스 연결 메서드
   void _connectToDevice(DiscoveredDevice device) {
     _connectionSubscription = _flutterReactiveBle
@@ -121,29 +132,8 @@ class BluetoothViewModel {
     }, onError: (error) {
       // 에러 발생 시
       print("Connection error: $error"); // 에러 로깅
-      if (_retryCount < _maxRetry) {
-        _startScanning();
-        _retryCount++;
-      } else {
-        // 사용자에게 에러 알림 (구현은 여기에 추가)
-        print("Max retry attempts reached.");
-      }
+      _retryConnection(); // 오류 발생 시 재시도 로직 호출
     });
-  }
-
-  // 디바운스된 카운터 업데이트 메서드
-  void _updateCount(DiscoveredDevice device) async {
-    if (!_isRest) {
-      // rest 상태가 아닐 때만 카운트 감소
-      countNotifier.value--;
-    }
-
-    if (countNotifier.value == 0) {
-      _debounceTimer = Timer(const Duration(microseconds: 300), () {
-        countNotifier.value = 5;
-      });
-      //onNavigateToHome?.call();
-    }
   }
 
   void _onNewDataReceived(String receivedData, DiscoveredDevice device) {
@@ -152,6 +142,28 @@ class BluetoothViewModel {
     print("Received string from device: $receivedData");
     _updateCount(device);
     print("count 업데이트");
+  }
+
+  // 디바운스된 카운터 업데이트 메서드
+  void _updateCount(DiscoveredDevice device) {
+    if (_debounceTimer?.isActive ?? false) {
+      // 디바운싱 중이라면 더 이상 로직을 진행하지 않습니다.
+      return;
+    }
+
+    if (!_isRest) {
+      // rest 상태가 아닐 때만 카운트 감소
+      countNotifier.value--;
+    }
+
+    if (countNotifier.value == 0) {
+      countNotifier.value = 5;
+    }
+
+    // 디바운스 타이머 설정
+    _debounceTimer = Timer(const Duration(milliseconds: 100), () {
+      // 이 타이머가 실행되는 동안 _updateCount는 더 이상 진행되지 않습니다.
+    });
   }
 
   Future<void> writeDataToDevice(String text) async {
