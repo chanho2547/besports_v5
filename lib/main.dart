@@ -1,3 +1,4 @@
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:besports_v5/constants/sizes.dart';
 import 'package:besports_v5/features/dashboard/dashboard_screen.dart';
 import 'package:besports_v5/features/exercise/bluetooth_method/bluetoothView.dart';
@@ -7,7 +8,12 @@ import 'package:besports_v5/features/profile/profile_screen.dart';
 import 'package:besports_v5/features/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+
+void myTask() {
+  print('my task is running');
+}
 
 void main() => runApp(const MyApp());
 
@@ -34,6 +40,7 @@ class MyHomePage extends StatefulWidget {
 
 class MyHomePageState extends State<MyHomePage> {
   static bool isModal = false;
+
   void _readNFC() async {
     try {
       bool isAvailable = await NfcManager.instance.isAvailable();
@@ -85,6 +92,7 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+
     _readNFC(); // NFC 읽기 시작
   }
 
@@ -167,7 +175,7 @@ class MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month), label: 'Favorites'),
+              icon: Icon(Icons.calendar_month), label: 'Calendar'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

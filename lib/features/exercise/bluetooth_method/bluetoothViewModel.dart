@@ -83,9 +83,22 @@ class BluetoothViewModel {
               characteristicId: characteristic.id,
               serviceId: service.id,
               deviceId: device.id);
+
+          // 알림 구독 (신)
+          // _connectionSubscription = _flutterReactiveBle
+          //     .subscribeToCharacteristic(_charToSubscribe)
+          //     .listen((value) {
+          //   print("this is value _connectionSubscription : $value");
+          //   String receivedData = utf8.decode(value);
+          //   _onNewDataReceived(receivedData, device);
+          // });
+
+          // 알림 구독 (구)
           _flutterReactiveBle
               .subscribeToCharacteristic(_charToSubscribe)
               .listen((value) {
+            print("this is value : $value");
+
             String receivedData = utf8.decode(value);
             _onNewDataReceived(receivedData, device);
           });

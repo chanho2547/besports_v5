@@ -14,7 +14,10 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   String workout_name = 'WORKOUT';
 
   final List<String> workoutsImages = [
@@ -140,6 +143,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     s = RSizes(
         MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
     g = RGaps(
