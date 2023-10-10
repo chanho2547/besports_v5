@@ -41,7 +41,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   late RSizes s;
   late RGaps g;
 
-  String _setMessage = "START!!"; // 초기 메시지는 빈 문자열
+  String _setMessage = "4 SET 남음"; // 초기 메시지는 빈 문자열
 
   @override
   void initState() {

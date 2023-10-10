@@ -52,6 +52,13 @@ class _DashboardScreenState extends State<DashboardScreen>
   late RSizes s;
   late RGaps g;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    _updateNumbers("Month");
+    super.initState();
+  }
+
   void _showDatePicker(BuildContext context) {
     DatePicker.showDatePicker(
       context,
