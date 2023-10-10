@@ -43,26 +43,28 @@ class MyHomePageState extends State<MyHomePage> {
 
   void _readNFC() async {
     try {
-      bool isAvailable = await NfcManager.instance.isAvailable();
+      if (!isModal) {
+        bool isAvailable = await NfcManager.instance.isAvailable();
 
-      if (!isAvailable) {
-        // NFC를 사용할 수 없는 경우 처리
-        return;
+        if (!isAvailable) {
+          // NFC를 사용할 수 없는 경우 처리
+          return;
+        }
+
+        NfcManager.instance.startSession(
+          onDiscovered: (NfcTag tag) async {
+            Map tagData = tag.data;
+            Map tagNdef = tagData['ndef'];
+            Map cachedMessage = tagNdef['cachedMessage'];
+            Map records = cachedMessage['records'][0];
+            Uint8List payload = records['payload'];
+            String payloadAsString = String.fromCharCodes(payload);
+
+            // 읽어온 NFC 텍스트 값으로 모달창을 표시
+            _showNFCModal(context, payloadAsString);
+          },
+        );
       }
-
-      NfcManager.instance.startSession(
-        onDiscovered: (NfcTag tag) async {
-          Map tagData = tag.data;
-          Map tagNdef = tagData['ndef'];
-          Map cachedMessage = tagNdef['cachedMessage'];
-          Map records = cachedMessage['records'][0];
-          Uint8List payload = records['payload'];
-          String payloadAsString = String.fromCharCodes(payload);
-
-          // 읽어온 NFC 텍스트 값으로 모달창을 표시
-          _showNFCModal(context, payloadAsString);
-        },
-      );
     } catch (e) {
       print("NFC Error: $e");
     }
@@ -81,6 +83,7 @@ class MyHomePageState extends State<MyHomePage> {
               borderRadius: const BorderRadius.all(Radius.circular(20.0)),
               child: BluetoothScreen(
                 addr: message,
+                onDispose: _readNFC, // 여기서 콜백 연결
               ),
             ),
           );
@@ -92,8 +95,9 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-
-    _readNFC(); // NFC 읽기 시작
+    if (!isModal) {
+      _readNFC(); // NFC 읽기 시작
+    }
   }
 
   int _currentIndex = 0;
@@ -206,13 +210,19 @@ void showTopModal({
   required BuildContext context,
   required WidgetBuilder builder,
 }) {
-  Navigator.of(context).push(_TopModalRoute(builder: builder));
+  Navigator.of(context).push(_TopModalRoute(
+    builder: builder,
+    onClose: () {
+      NfcManager.instance.stopSession();
+    },
+  ));
 }
 
 class _TopModalRoute<T> extends PopupRoute<T> {
-  _TopModalRoute({required this.builder});
+  _TopModalRoute({required this.builder, required this.onClose});
 
   final WidgetBuilder builder;
+  final VoidCallback onClose;
 
   @override
   Color? get barrierColor => Colors.white.withOpacity(0.8);
@@ -232,7 +242,13 @@ class _TopModalRoute<T> extends PopupRoute<T> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    return Builder(builder: builder);
+    return WillPopScope(
+      onWillPop: () async {
+        onClose();
+        return true;
+      },
+      child: Builder(builder: builder),
+    );
   }
 
   @override

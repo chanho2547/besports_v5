@@ -174,7 +174,7 @@ class BluetoothViewModel {
     }
 
     // 디바운스 타이머 설정
-    _debounceTimer = Timer(const Duration(milliseconds: 100), () {
+    _debounceTimer = Timer(const Duration(milliseconds: 0), () {
       // 이 타이머가 실행되는 동안 _updateCount는 더 이상 진행되지 않습니다.
     });
   }
