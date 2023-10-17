@@ -2,7 +2,8 @@ import 'package:android_intent_plus/android_intent.dart';
 import 'package:besports_v5/constants/sizes.dart';
 import 'package:besports_v5/features/dashboard/dashboard_screen.dart';
 import 'package:besports_v5/features/exercise/bluetooth_method/bluetoothView.dart';
-
+import 'package:besports_v5/constants/staticStatus.dart';
+import 'package:besports_v5/features/dashboard/Screens/bottomModalView.dart';
 import 'package:besports_v5/features/history/history_screen.dart';
 import 'package:besports_v5/features/profile/profile_screen.dart';
 import 'package:besports_v5/features/search/search_screen.dart';
@@ -18,7 +19,7 @@ void myTask() {
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +33,25 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   MyHomePageState createState() => MyHomePageState();
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  static bool isModal = false;
+  int _currentIndex = 0;
+  final PageController _pageController = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    _readNFC(); // NFC 읽기 시작
+  }
 
   void _readNFC() async {
     try {
-      if (!isModal) {
+      if (!BoolStatus.isModal) {
         bool isAvailable = await NfcManager.instance.isAvailable();
 
         if (!isAvailable) {
@@ -60,18 +68,19 @@ class MyHomePageState extends State<MyHomePage> {
             Uint8List payload = records['payload'];
             String payloadAsString = String.fromCharCodes(payload);
 
-            // 읽어온 NFC 텍스트 값으로 모달창을 표시
             _showNFCModal(context, payloadAsString);
           },
         );
+      } else {
+        return;
       }
     } catch (e) {
       print("NFC Error: $e");
     }
   }
 
-  void _showNFCModal(BuildContext context, String message) {
-    if (!isModal) {
+  void _showNFCModal(BuildContext context, String message) async {
+    if (!BoolStatus.isModal) {
       HapticFeedback.vibrate; // 햅틱 피드백 호출
       showTopModal(
         context: context,
@@ -88,54 +97,10 @@ class MyHomePageState extends State<MyHomePage> {
             ),
           );
         },
+        onClose: _readNFC, // 모달이 닫힐 때 호출될 콜백으로 _readNFC를 전달
       );
     }
   }
-
-  @override
-  void initState() {
-    super.initState();
-    if (!isModal) {
-      _readNFC(); // NFC 읽기 시작
-    }
-  }
-
-  int _currentIndex = 0;
-  final PageController _pageController = PageController();
-
-  /////아래 showModalSheet은 현재 사용하지 않음
-  // void _showModalSheet(BuildContext context) {
-  //   HapticFeedback.lightImpact(); // 햅틱 피드백 호출
-  //   showModalBottomSheet(
-  //     context: context,
-  //     backgroundColor: Colors.transparent, // 배경색을 투명하게 설정
-  //     isScrollControlled: true, // 스크롤이 제어되도록 설정
-  //     useRootNavigator: true,
-
-  //     builder: (builder) {
-  //       return FractionallySizedBox(
-  //         heightFactor: 0.5, // 화면의 높이의 50%(절반)만큼 설정
-  //         alignment: Alignment.bottomCenter, // 아래쪽에서 시작
-  //         child: Container(
-  //           padding: const EdgeInsets.all(20),
-  //           decoration: const BoxDecoration(
-  //             color: Colors.white, // 이 부분은 필요에 따라 조절하세요. 바텀 시트의 실제 배경색입니다.
-  //             borderRadius: BorderRadius.only(
-  //               // 상단의 모서리만 둥글게 합니다.
-  //               topLeft: Radius.circular(20.0),
-  //               topRight: Radius.circular(20.0),
-  //             ),
-  //           ),
-  //           child: const Center(
-  //               child: Text(
-  //             "Tap to Start",
-  //             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-  //           )),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -202,68 +167,6 @@ class PlaceholderWidget extends StatelessWidget {
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
-    );
-  }
-}
-
-void showTopModal({
-  required BuildContext context,
-  required WidgetBuilder builder,
-}) {
-  Navigator.of(context).push(_TopModalRoute(
-    builder: builder,
-    onClose: () {
-      NfcManager.instance.stopSession();
-    },
-  ));
-}
-
-class _TopModalRoute<T> extends PopupRoute<T> {
-  _TopModalRoute({required this.builder, required this.onClose});
-
-  final WidgetBuilder builder;
-  final VoidCallback onClose;
-
-  @override
-  Color? get barrierColor => Colors.white.withOpacity(0.8);
-
-  @override
-  bool get barrierDismissible => true;
-
-  @override
-  String? get barrierLabel => null;
-
-  @override
-  Duration get transitionDuration => const Duration(milliseconds: 300);
-
-  @override
-  Widget buildPage(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-  ) {
-    return WillPopScope(
-      onWillPop: () async {
-        onClose();
-        return true;
-      },
-      child: Builder(builder: builder),
-    );
-  }
-
-  @override
-  Widget buildTransitions(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0, -1),
-        end: const Offset(0, 0),
-      ).animate(animation),
-      child: child,
     );
   }
 }

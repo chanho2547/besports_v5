@@ -3,6 +3,7 @@ import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
 import 'package:besports_v5/constants/sizes.dart';
+import 'package:besports_v5/constants/staticStatus.dart';
 import 'package:besports_v5/main.dart';
 import 'package:besports_v5/router.dart';
 import 'package:flutter/material.dart';
@@ -78,8 +79,8 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   //모달 확인
   void _checkModal() {
-    if (!MyHomePageState.isModal) {
-      MyHomePageState.isModal = true;
+    if (!BoolStatus.isModal) {
+      BoolStatus.isModal = true;
       print("BluetoothViewModel 초기화 중");
     }
   }
@@ -513,6 +514,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   @override
   void dispose() {
+    NfcManager.instance.stopSession();
     print("view dispose");
     _animationController.dispose();
     _viewModel!.dispose();

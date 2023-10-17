@@ -1,3 +1,4 @@
+import 'package:besports_v5/constants/staticStatus.dart';
 import 'package:besports_v5/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
@@ -211,7 +212,7 @@ class BluetoothViewModel {
     _setCount = 4;
     _disconnect(); // 자원 해제 추가
     _debounceTimer?.cancel();
-    MyHomePageState.isModal = false;
+    BoolStatus.isModal = false;
     print("isModal: false");
   }
 }

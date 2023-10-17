@@ -1,6 +1,5 @@
 import 'package:besports_v5/features/dashboard/dashboard_screen.dart';
 import 'package:besports_v5/features/exercise/exercise_screen.dart';
-import 'package:besports_v5/features/exercise/nfc/nfcView.dart';
 import 'package:besports_v5/features/history/history_screen.dart';
 import 'package:besports_v5/features/profile/profile_screen.dart';
 import 'package:besports_v5/features/search/search_screen.dart';
@@ -56,10 +55,10 @@ final goRouter = GoRouter(
     //     },
     //   ),
     // ),
-    GoRoute(
-      path: NFCScreen.routeURL,
-      name: NFCScreen.routeName,
-      builder: (context, state) => const NFCScreen(),
-    )
+    // GoRoute(
+    //   path: NFCScreen.routeURL,
+    //   name: NFCScreen.routeName,
+    //   builder: (context, state) => const NFCScreen(),
+    // )
   ],
 );
