@@ -316,6 +316,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                   onTap: () {
                     setState(() {
                       _viewModel?.setCountSet = index + 1;
+                      _setMessage = '남은 Set: ${_viewModel?.setCount}';
                     });
                     Navigator.pop(context);
                   },
@@ -514,7 +515,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   @override
   void dispose() {
-    NfcManager.instance.stopSession();
+    // NfcManager.instance.stopSession();
     print("view dispose");
     _animationController.dispose();
     _viewModel!.dispose();

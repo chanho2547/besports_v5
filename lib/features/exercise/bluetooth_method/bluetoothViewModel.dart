@@ -36,6 +36,7 @@ class BluetoothViewModel {
   int get count => _count;
   int get setCount => _setCount;
   bool get isRset => _isRest;
+
   set setCountSet(int value) => _setCount = value;
   set setRestState(bool isRest) => _isRest = isRest;
   void minusSetCount() {
