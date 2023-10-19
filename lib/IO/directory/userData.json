@@ -1,0 +1,30 @@
+{
+    "id": "user1234",
+    "exerciseRecords": {
+        "2023-10-20": [
+            {
+                "machineName": "시티드로우",
+                "weightToCountPerSet": {
+                    "0": 15
+                }
+            },
+            {
+                "machineName": "랫풀다운",
+                "weightToCountPerSet": {
+                    "50": 10,
+                    "60": 8,
+                    "70": 6
+                }
+            }
+        ],
+        "2023-10-21": [
+            {
+                "machineName": "시티드로우",
+                "weightToCountPerSet": {
+                    "80": 10,
+                    "90": 8
+                }
+            }
+        ]
+    }
+}

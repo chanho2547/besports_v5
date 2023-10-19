@@ -10,7 +10,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       id: json['id'] as String,
       exerciseRecords: (json['exerciseRecords'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(
-            DateTime.parse(k),
+            k,
             (e as List<dynamic>)
                 .map((e) => ExerciseSession.fromJson(e as Map<String, dynamic>))
                 .toList()),
@@ -19,8 +19,8 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'id': instance.id,
-      'exerciseRecords': instance.exerciseRecords.map((k, e) =>
-          MapEntry(k.toIso8601String(), e.map((e) => e.toJson()).toList())),
+      'exerciseRecords': instance.exerciseRecords
+          .map((k, e) => MapEntry(k, e.map((e) => e.toJson()).toList())),
     };
 
 ExerciseSession _$ExerciseSessionFromJson(Map<String, dynamic> json) =>

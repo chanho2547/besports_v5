@@ -5,11 +5,18 @@ part 'user.g.dart';
 @JsonSerializable(explicitToJson: true)
 class User {
   final String id;
-  Map<DateTime, List<ExerciseSession>> exerciseRecords;
+  Map<String, List<ExerciseSession>> exerciseRecords;
 
   User({required this.id, required this.exerciseRecords});
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  factory User.fromJson(Map<String, dynamic> json) {
+    json['exerciseRecords'] = (json['exerciseRecords'] as Map).map(
+      (k, v) => MapEntry(
+          k, (v as List).map((e) => ExerciseSession.fromJson(e)).toList()),
+    );
+    return _$UserFromJson(json);
+  }
+
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 
@@ -25,3 +32,4 @@ class ExerciseSession {
       _$ExerciseSessionFromJson(json);
   Map<String, dynamic> toJson() => _$ExerciseSessionToJson(this);
 }
+
