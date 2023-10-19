@@ -109,4 +109,21 @@ class UserFileIO {
   void pushExerciseSession(DateTime date, ExerciseSession session) {
     pushExerciseSessions(date, [session]); // 위의 메서드를 활용
   }
+
+  // 특정 날짜의 운동 기구 이름을 기준으로 해당 기구로 수행한 전체 세트 수 반환
+  // int setsForSeatedRow = fileIO.getTotalSetsForMachineOn("2023-10-20", "시티드로우");
+  // print('시티드로우로 수행한 총 세트 수: $setsForSeatedRow');
+  int getTotalSetsForMachineOn(String dateString, String machineName) {
+    var sessions = getExerciseSessionsOn(dateString);
+
+    int totalSets = 0;
+
+    for (var session in sessions) {
+      if (session.machineName == machineName) {
+        totalSets += session.weightToCountPerSet.length;
+      }
+    }
+
+    return totalSets;
+  }
 }
