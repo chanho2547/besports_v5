@@ -20,6 +20,8 @@ class BluetoothViewModel {
   static int _retryCount = 0; // 재시도 횟수
   final int _maxRetry = 5; // 최대 재시도 횟수
 
+  Map<String, int> lowData = {};
+
   ValueNotifier<String> receivedDataNotifier = ValueNotifier<String>("");
 
   NavigationCallback? onNavigateToHome;

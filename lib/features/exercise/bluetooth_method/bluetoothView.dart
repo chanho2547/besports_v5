@@ -6,6 +6,7 @@ import 'package:besports_v5/constants/sizes.dart';
 import 'package:besports_v5/constants/staticStatus.dart';
 import 'package:besports_v5/main.dart';
 import 'package:besports_v5/router.dart';
+import 'package:besports_v5/utils/dateUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
@@ -417,7 +418,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                         valueListenable: _viewModel!.receivedDataNotifier,
                         builder: (context, receivedData, _) => Center(
                           child: Text(
-                            "${receivedData.replaceAll("\$r", '').replaceAll(';', '')} KG",
+                            "${recivedDataToLowData(receivedData)} KG",
                             textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
                             style: const TextStyle(
                               fontSize: Sizes.size52,

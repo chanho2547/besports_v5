@@ -5,7 +5,39 @@
             {
                 "machineName": "시티드로우",
                 "weightToCountPerSet": {
-                    "0": 15
+                    "50": 10,
+                    "60": 8,
+                    "70": 6
+                }
+            },
+            {
+                "machineName": "시티드로우",
+                "weightToCountPerSet": {
+                    "50": 10,
+                    "60": 8,
+                    "70": 6
+                }
+            },
+            {
+                "machineName": "시티드로우",
+                "weightToCountPerSet": {
+                    "50": 10,
+                    "60": 8,
+                    "70": 6
+                }
+            },
+            {
+                "machineName": "시티드로우",
+                "weightToCountPerSet": {
+                    "50": 10,
+                    "60": 8,
+                    "70": 6
+                }
+            },
+            {
+                "machineName": "시티드로우",
+                "weightToCountPerSet": {
+                    "10": 15
                 }
             },
             {
