@@ -16,6 +16,8 @@ class MapFileIO {
     if (file.existsSync()) {
       String jsonString = file.readAsStringSync();
       _mapDatastructure = Map<String, String>.from(json.decode(jsonString));
+    } else {
+      _mapDatastructure = {}; // 여기에서 초기화합니다.
     }
   }
 

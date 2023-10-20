@@ -39,6 +39,7 @@ class BluetoothViewModel {
   int get setCount => _setCount;
   bool get isRset => _isRest;
   void pushData() {
+    print("MapData set: $lawData");
     lawDatas.add(lawData);
     lawData.clear();
   }
@@ -218,9 +219,13 @@ class BluetoothViewModel {
 
   void _saveData() {
     UserFileIO fileIO = UserFileIO();
+    String? machineNameValue = _mapFileIO.keyToValue(deviceAddr);
+    if (machineNameValue == null) {
+      print("Error: deviceAddr not found in the map. Cannot save data.");
+      return;
+    }
     ExerciseSession session = ExerciseSession(
-        machineName: _mapFileIO.keyToValue(deviceAddr)!, // 실제 기계 이름으로 변경 필요
-        weightToCountPerSet: lawDatas);
+        machineName: machineNameValue, weightToCountPerSet: lawDatas);
     fileIO.addExerciseSession(DateTime.now(), session);
   }
 

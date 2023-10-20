@@ -1,7 +1,7 @@
 {
     "id": "user1234",
     "exerciseRecords": {
-        "2023-10-20": [
+        "2023-10-01": [
             {
                 "machineName": "시티드로우",
                 "weightToCountPerSet": {
@@ -49,7 +49,7 @@
                 }
             }
         ],
-        "2023-10-21": [
+        "2023-10-02": [
             {
                 "machineName": "시티드로우",
                 "weightToCountPerSet": {
