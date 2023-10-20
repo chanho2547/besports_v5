@@ -170,6 +170,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   }
 
   void _onCloseTap() {
+    _viewModel!.pushData();
     _viewModel?.setRestState = false;
     _viewModel?.writeDataToDevice("\$wr;");
     flutterTts.speak('휴식 종료');

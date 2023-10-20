@@ -1,3 +1,6 @@
+import 'package:besports_v5/IO/mapFileIO.dart';
+import 'package:besports_v5/IO/user.dart';
+import 'package:besports_v5/IO/userFileIO.dart';
 import 'package:besports_v5/constants/staticStatus.dart';
 import 'package:besports_v5/main.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,24 +23,25 @@ class BluetoothViewModel {
   static int _retryCount = 0; // 재시도 횟수
   final int _maxRetry = 5; // 최대 재시도 횟수
 
-  Map<String, int> lowData = {};
-
+  List<Map<String, int>> lawDatas = [];
+  Map<String, int> lawData = {};
   ValueNotifier<String> receivedDataNotifier = ValueNotifier<String>("");
-
   NavigationCallback? onNavigateToHome;
-
   StreamSubscription? _connectionSubscription;
-
   BluetoothViewModel({required this.deviceAddr});
-
   late final QualifiedCharacteristic _charToSubscribe;
   late QualifiedCharacteristic _charToWrite;
+  final MapFileIO _mapFileIO = MapFileIO();
 
   bool isPaused = false; // 카운트 일시 중지 상태
 
   int get count => _count;
   int get setCount => _setCount;
   bool get isRset => _isRest;
+  void pushData() {
+    lawDatas.add(lawData);
+    lawData.clear();
+  }
 
   set setCountSet(int value) => _setCount = value;
   set setRestState(bool isRest) => _isRest = isRest;
@@ -155,6 +159,8 @@ class BluetoothViewModel {
 
   void _onNewDataReceived(String receivedData, DiscoveredDevice device) {
     // 데이터 수신 시 호출될 함수
+    lawData.putIfAbsent(receivedData, () => 0);
+    lawData[receivedData] = lawData[receivedData]! + 1;
     receivedDataNotifier.value = receivedData;
     print("Received string from device: $receivedData");
     _updateCount(device);
@@ -210,8 +216,17 @@ class BluetoothViewModel {
     }
   }
 
+  void _saveData() {
+    UserFileIO fileIO = UserFileIO();
+    ExerciseSession session = ExerciseSession(
+        machineName: _mapFileIO.keyToValue(deviceAddr)!, // 실제 기계 이름으로 변경 필요
+        weightToCountPerSet: lawDatas);
+    fileIO.addExerciseSession(DateTime.now(), session);
+  }
+
   // dispose 메서드
   void dispose() {
+    _saveData();
     _setCount = 4;
     _disconnect(); // 자원 해제 추가
     _debounceTimer?.cancel();
