@@ -347,6 +347,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     _animationController.forward(from: 0);
   }
 
+  // 실제 화면을 그리는 코드
   @override
   Widget build(BuildContext context) {
     //size
@@ -414,22 +415,32 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                       ),
                     ),
                     g.vr12(),
-                    Container(
-                      child: ValueListenableBuilder<String>(
-                        valueListenable: _viewModel!.receivedDataNotifier,
-                        builder: (context, receivedData, _) => Center(
-                          child: Text(
-                            "${recivedDataToLowData(receivedData)} KG",
-                            textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
-                            style: const TextStyle(
-                              fontSize: Sizes.size52,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                    _viewModel!.isConnect
+                        ? ValueListenableBuilder<String>(
+                            valueListenable: _viewModel!.receivedDataNotifier,
+                            builder: (context, receivedData, _) => Center(
+                              child: Text(
+                                "${recivedDataToLowData(receivedData)} KG",
+                                textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
+                                style: const TextStyle(
+                                  fontSize: Sizes.size52,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          )
+                        : const Center(
+                            child: Text(
+                              "연결중...",
+                              textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
+                              style: TextStyle(
+                                fontSize: Sizes.size32,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
                     g.vr05(),
                     Center(
                       child: Column(

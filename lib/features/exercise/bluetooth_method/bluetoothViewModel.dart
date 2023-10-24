@@ -8,6 +8,8 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 typedef NavigationCallback = void Function();
 
 class BluetoothViewModel {
@@ -22,6 +24,7 @@ class BluetoothViewModel {
   bool _isRest = false;
   static int _retryCount = 0; // 재시도 횟수
   final int _maxRetry = 5; // 최대 재시도 횟수
+  bool _isConnect = false;
 
   List<Map<String, int>> lawDatas = [];
   Map<String, int> lawData = {};
@@ -32,12 +35,16 @@ class BluetoothViewModel {
   late final QualifiedCharacteristic _charToSubscribe;
   late QualifiedCharacteristic _charToWrite;
   final MapFileIO _mapFileIO = MapFileIO();
+  final myProvider = StateProvider<bool>((ref) => false);
 
   bool isPaused = false; // 카운트 일시 중지 상태
 
   int get count => _count;
   int get setCount => _setCount;
   bool get isRset => _isRest;
+  bool get isConnect => _isConnect;
+  set isConnect(bool value) => _isConnect = value;
+
   void pushData() {
     print("MapData set: $lawData");
     lawDatas.add(lawData);
@@ -145,6 +152,12 @@ class BluetoothViewModel {
         .listen((connectionState) async {
       if (connectionState.connectionState == DeviceConnectionState.connected) {
         _retryCount = 0; // 연결에 성공하면 재시도 횟수 초기화
+
+        isConnect = true; // 연결된 장치 목록에 추가
+
+        // 화면 리랜더링
+        // countNotifier.value = 5;
+
         _discoverAndSubscribe(device); // 서비스 및 캐릭터리스틱 검색 및 구독
       } else if (connectionState.connectionState ==
           DeviceConnectionState.disconnected) {
@@ -215,6 +228,7 @@ class BluetoothViewModel {
       _flutterReactiveBle.clearGattCache(deviceAddr.substring(3));
       connectedDevices.remove(deviceAddr.substring(3));
     }
+    _isConnect = false;
   }
 
   void _saveData() {
