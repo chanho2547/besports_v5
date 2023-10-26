@@ -6,6 +6,7 @@ import 'package:besports_v5/constants/staticStatus.dart';
 import 'package:besports_v5/features/dashboard/Screens/bottomModalView.dart';
 import 'package:besports_v5/features/history/history_screen.dart';
 import 'package:besports_v5/features/profile/profile_screen.dart';
+import 'package:besports_v5/features/recommend/recommend_screen.dart';
 import 'package:besports_v5/features/search/search_screen.dart';
 import 'package:besports_v5/permission/permissionRequest.dart';
 import 'package:flutter/material.dart';
@@ -118,7 +119,8 @@ class MyHomePageState extends State<MyHomePage> {
         },
         children: const [
           DashboardScreen(),
-          SearchScreen(),
+          // SearchScreen(),
+          RecommendScreen(),
           HistoryScreen(),
           ProfileScreen(),
         ],
