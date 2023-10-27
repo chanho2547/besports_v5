@@ -52,13 +52,18 @@ class MyHomePageState extends State<MyHomePage> {
     PermissionService.requestStoragePermission();
   }
 
+  bool isReadingNfc = false; // NFC를 읽고 있는지 여부를 저장하는 변수 추가
+
   void _readNFC() async {
+    if (isReadingNfc) return; // 이미 NFC를 읽고 있으면 return
+
     try {
+      isReadingNfc = true; // NFC 읽기 시작 상태로 설정
       if (!BoolStatus.isModal) {
         bool isAvailable = await NfcManager.instance.isAvailable();
 
         if (!isAvailable) {
-          // NFC를 사용할 수 없는 경우 처리
+          isReadingNfc = false; // NFC 읽기 종료 상태로 설정
           return;
         }
 
@@ -72,12 +77,18 @@ class MyHomePageState extends State<MyHomePage> {
             String payloadAsString = String.fromCharCodes(payload);
 
             _showNFCModal(context, payloadAsString);
+
+            await Future.delayed(const Duration(
+                seconds: 10)); // 10초 동안 딜레이를 준 후 NFC를 다시 읽을 수 있도록 함
+            isReadingNfc = false; // 딜레이가 끝나면 NFC 읽기 종료 상태로 설정
           },
         );
       } else {
+        isReadingNfc = false; // NFC 읽기 종료 상태로 설정
         return;
       }
     } catch (e) {
+      isReadingNfc = false; // NFC 읽기 종료 상태로 설정
       print("NFC Error: $e");
     }
   }

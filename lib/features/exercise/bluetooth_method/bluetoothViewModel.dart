@@ -3,6 +3,7 @@ import 'package:besports_v5/IO/user.dart';
 import 'package:besports_v5/IO/userFileIO.dart';
 import 'package:besports_v5/constants/staticStatus.dart';
 import 'package:besports_v5/main.dart';
+import 'package:besports_v5/utils/dateUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:async';
@@ -18,7 +19,6 @@ class BluetoothViewModel {
   ValueNotifier<int> countNotifier = ValueNotifier<int>(0);
   final Set<String> connectedDevices = {};
   StreamSubscription? _scanSubscription;
-  Timer? _debounceTimer;
   int _setCount = 4;
   final int _count = 5;
   bool _isRest = false;
@@ -47,7 +47,7 @@ class BluetoothViewModel {
 
   void pushData() {
     print("MapData set: $lawData");
-    lawDatas.add(lawData);
+    lawDatas.add(Map.from(lawData));
     lawData.clear();
   }
 
@@ -61,7 +61,6 @@ class BluetoothViewModel {
   void initialize() async {
     // 이전 연결/스캔 구독 및 타이머 해제
     _disconnect();
-    _debounceTimer?.cancel();
     _scanSubscription?.cancel();
 
     countNotifier.value = 5; // 카운터 초기화
@@ -85,6 +84,8 @@ class BluetoothViewModel {
   }
 
   void _discoverAndSubscribe(DiscoveredDevice device) async {
+    // 기존에 초기화된 경우를 체크하는 변수를 추가
+    bool alreadySubscribed = false;
     // 서비스 검색
     await _flutterReactiveBle.discoverAllServices(device.id);
 
@@ -93,23 +94,13 @@ class BluetoothViewModel {
 
     for (final service in services) {
       for (final characteristic in service.characteristics) {
-        if (characteristic.isNotifiable) {
+        if (characteristic.isNotifiable && !alreadySubscribed) {
           // 알림 활성화
           _charToSubscribe = QualifiedCharacteristic(
               characteristicId: characteristic.id,
               serviceId: service.id,
               deviceId: device.id);
-
-          // 알림 구독 (신)
-          // _connectionSubscription = _flutterReactiveBle
-          //     .subscribeToCharacteristic(_charToSubscribe)
-          //     .listen((value) {
-          //   print("this is value _connectionSubscription : $value");
-          //   String receivedData = utf8.decode(value);
-          //   _onNewDataReceived(receivedData, device);
-          // });
-
-          // 알림 구독 (구)
+          alreadySubscribed = true;
           _flutterReactiveBle
               .subscribeToCharacteristic(_charToSubscribe)
               .listen((value) {
@@ -167,27 +158,27 @@ class BluetoothViewModel {
     }, onError: (error) {
       // 에러 발생 시
       print("Connection error: $error"); // 에러 로깅
-      _retryConnection(); // 오류 발생 시 재시도 로직 호출
+      if (_retryCount < _maxRetry) {
+        // 재연결 로직 추가
+        _startScanning();
+        _retryCount++;
+      }
     });
   }
 
   void _onNewDataReceived(String receivedData, DiscoveredDevice device) {
     // 데이터 수신 시 호출될 함수
-    lawData.putIfAbsent(receivedData, () => 0);
-    lawData[receivedData] = lawData[receivedData]! + 1;
+    String data = recivedDataToRawData(receivedData)!;
+    lawData.putIfAbsent(data, () => 0);
+    lawData[data] = lawData[data]! + 1;
     receivedDataNotifier.value = receivedData;
-    print("Received string from device: $receivedData");
+    print("Received string from device: $lawData");
     _updateCount(device);
     print("count 업데이트");
   }
 
   // 디바운스된 카운터 업데이트 메서드
   void _updateCount(DiscoveredDevice device) {
-    if (_debounceTimer?.isActive ?? false) {
-      // 디바운싱 중이라면 더 이상 로직을 진행하지 않습니다.
-      return;
-    }
-
     if (!_isRest) {
       // rest 상태가 아닐 때만 카운트 감소
       countNotifier.value--;
@@ -196,11 +187,6 @@ class BluetoothViewModel {
     if (countNotifier.value == 0) {
       countNotifier.value = 5;
     }
-
-    // 디바운스 타이머 설정
-    _debounceTimer = Timer(const Duration(milliseconds: 0), () {
-      // 이 타이머가 실행되는 동안 _updateCount는 더 이상 진행되지 않습니다.
-    });
   }
 
   Future<void> writeDataToDevice(String text) async {
@@ -245,10 +231,11 @@ class BluetoothViewModel {
 
   // dispose 메서드
   void dispose() {
+    print("____________________________________________");
+    print(lawDatas);
+    print("____________________________________________");
     _saveData();
-    _setCount = 4;
     _disconnect(); // 자원 해제 추가
-    _debounceTimer?.cancel();
     BoolStatus.isModal = false;
     print("isModal: false");
   }

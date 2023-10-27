@@ -55,7 +55,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
     _initAnimationController();
     _checkModal();
-    _initializeViewModel();
+    _initializeViewModel(); // ViewModel을 초기화합니다.
     _listenForCountChanges();
     _initPulseAnimation();
   }
@@ -91,50 +91,8 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   //viewModel초기화
   void _initializeViewModel() {
     _viewModel = BluetoothViewModel(deviceAddr: widget.addr);
-    _viewModel!.onNavigateToHome = _navigateToHome;
+    // _viewModel!.onNavigateToHome = _navigateToHome;
     _viewModel!.initialize();
-  }
-
-  void numberToKoreanWord(int number) async {
-    //_lastNumber = number; // 마지막 번호를 업데이트
-    if (number == 0 && _lastNumber == 0) {
-      // 이전 번호도 0이었으므로 아무것도 하지 않음
-    } else {
-      try {
-        switch (number) {
-          case 1:
-            await flutterTts.stop();
-            await flutterTts.speak("하나");
-            break;
-          case 2:
-            await flutterTts.stop();
-            await flutterTts.speak("둘");
-            break;
-          case 3:
-            await flutterTts.stop();
-            await flutterTts.speak("셋");
-            break;
-          case 4:
-            await flutterTts.stop();
-            await flutterTts.speak("넷");
-            break;
-          case 5:
-            await flutterTts.stop();
-            await flutterTts.speak("둘");
-            break;
-          case 0:
-            await flutterTts.stop();
-            // 벨소리 재생을 위한 audioplayer
-            final player = AudioPlayer();
-            player.setVolume(0.4); // 볼륨 설정, 최대 1.0
-            player.play(AssetSource('../sounds/bell_sound.mp3')); // 벨소리 재생
-            break;
-          default:
-        }
-      } catch (e) {
-        print("Error occurred: $e");
-      }
-    }
   }
 
   //count 변경 감지
@@ -181,10 +139,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   // 홈 화면으로 이동하는 함수
   void _navigateToHome() {
-    //dispose(); // 여기서 연결 해제
-
-    // 4초 후에 홈 화면으로 이동하는 코드
-
     print("0초 지남, 홈 화면으로 이동 시도중");
     //goRouter.go("/home");
     HapticFeedback.lightImpact(); // 햅틱 피드백 호출
@@ -195,6 +149,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   void _showRestTimeSheet() async {
     _viewModel?.setRestState = true;
+    _viewModel?.pushData();
     int start = 10;
 
     // 시간이 변화할 때마다 이 Stream에서 이벤트를 내보냅니다.
@@ -422,7 +377,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             valueListenable: _viewModel!.receivedDataNotifier,
                             builder: (context, receivedData, _) => Center(
                               child: Text(
-                                "${recivedDataToLowData(receivedData)} KG",
+                                "${recivedDataToRawData(receivedData)} KG",
                                 textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
                                 style: const TextStyle(
                                   fontSize: Sizes.size52,
@@ -472,7 +427,8 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                               builder: (context, count, _) {
                                 if (_viewModel!.countNotifier.value !=
                                     _lastNumber) {
-                                  numberToKoreanWord(5 - count);
+                                  numberToKoreanWord(
+                                      5 - count, _lastNumber, flutterTts);
                                   _lastNumber = _viewModel!.countNotifier.value;
                                 }
                                 return Stack(
