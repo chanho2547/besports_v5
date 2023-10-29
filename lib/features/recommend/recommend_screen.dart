@@ -1,16 +1,13 @@
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:besports_v5/constants/custom_colors.dart';
 import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
 import 'package:flutter/material.dart';
+import 'canvas/chat_bubble.dart';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:http/http.dart' as http;
-
-const apiKey = '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';
-const apiUrl = 'https://api.openai.com/v1/engines/davinci-codex/completions';
 
 class RecommendScreen extends StatefulWidget {
   const RecommendScreen({super.key});
@@ -100,30 +97,38 @@ class _RecommendScreenState extends State<RecommendScreen> {
     return prompt;
   }
 
-  // Future<String> fetchGPTResponse(String prompt) async {
-  //   const url = apiUrl;
-  //   final headers = {
-  //     'Authorization': 'Bearer $apiKey', // 여기에 실제 API 키를 넣으세요
-  //     'Content-Type': 'application/json',
-  //     'Accept': 'application/json',
-  //   };
+  Future<String> fetchGPTResponse(String prompt) async {
+    const url =
+        'https://api.openai.com/v1/chat/completions'; // apiUrl을 gpt-3.5-turbo의 endpoint로 변경
+    final headers = {
+      'Authorization':
+          'Bearer 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', // 여기에 실제 API 키를 넣으세요
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
 
-  //   final response = await http.post(
-  //     Uri.parse(url),
-  //     headers: headers,
-  //     body: json.encode({
-  //       'prompt': prompt,
-  //       'max_tokens': 50,
-  //     }),
-  //   );
+    final response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: json.encode({
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+          {
+            'role': 'user',
+            'content': prompt,
+          },
+        ],
+        'max_tokens': 500,
+      }),
+    );
 
-  //   if (response.statusCode == 200) {
-  //     var data = json.decode(response.body);
-  //     return data['choices'][0]['text'].trim();
-  //   } else {
-  //     throw Exception('Failed to fetch data from OpenAI');
-  //   }
-  // }
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      return data['choices'][0]['message']['content'].trim();
+    } else {
+      throw Exception('Failed to fetch data from OpenAI');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +136,8 @@ class _RecommendScreenState extends State<RecommendScreen> {
         MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
     g = RGaps(
         MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
+
+    bool isLoading = false;
 
     return SafeArea(
       child: Scaffold(
@@ -392,10 +399,15 @@ class _RecommendScreenState extends State<RecommendScreen> {
             Center(
               child: GestureDetector(
                 onTap: () async {
-                  String prompt = generateQuestion();
-                  // String response = await fetchGPTResponse(prompt);
                   setState(() {
-                    answerPrint = prompt;
+                    isLoading = true; // 로딩 시작
+                  });
+
+                  String prompt = generateQuestion();
+                  String response = await fetchGPTResponse(prompt);
+                  setState(() {
+                    answerPrint = "당신을 위한 추천 :\n$response";
+                    isLoading = false; // 로딩 종료
                   });
                 },
                 child: Container(
@@ -417,8 +429,29 @@ class _RecommendScreenState extends State<RecommendScreen> {
                 ),
               ),
             ),
-            g.vr01(),
-            Text(answerPrint),
+            g.vr05(),
+            isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: custom_colors.bgWhite,
+                    ),
+                  )
+                : Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: s.wrSize08(),
+                    ),
+                    child: Center(
+                      child: ChatBubble(
+                        child: Text(
+                          answerPrint,
+                          style: TextStyle(
+                            fontSize: s.hrSize015(),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
           ],
         ),
       ),
