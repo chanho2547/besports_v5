@@ -54,6 +54,8 @@ dependencies:
 
   flutter_tts: ^3.2.1
 
+  dart_openai: ^4.0.0
+
   audioplayers: ^5.1.0
 
   android_alarm_manager_plus: ^3.0.2

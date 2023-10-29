@@ -68,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen>
           _startDate = newDate;
         });
       },
-      "Select Workout",
+      "Select Start Date",
     );
   }
 
