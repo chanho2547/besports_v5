@@ -2,8 +2,10 @@ import 'package:besports_v5/constants/custom_colors.dart';
 import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
+import 'package:besports_v5/utils/dateUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:besports_v5/IO/userFileIO.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -25,6 +27,9 @@ class _HistoryScreenState extends State<HistoryScreen>
   late RSizes s;
   late RGaps g;
 
+  UserFileIO userFileIO = UserFileIO();
+  String? dataString;
+
   late int hours = minute ~/ 60;
   late int remainingMinutes = minute % 60;
 
@@ -33,11 +38,20 @@ class _HistoryScreenState extends State<HistoryScreen>
 
   bool isDetailsOnTop = false;
 
+  _loadData() async {
+    String dateString = nowToString(); // 원하는 날짜를 설정하세요.
+    String data = await userFileIO.getExerciseDataAsString(dateString);
+    setState(() {
+      dataString = data;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _focusedDay = DateTime.now();
     _selectedDay = _focusedDay;
+    _loadData();
   }
 
   @override
@@ -161,12 +175,18 @@ class _HistoryScreenState extends State<HistoryScreen>
                           ],
                         ),
                         g.vr03(),
-                        Center(
-                          child: Image.asset(
-                            'Images/Graph.png',
-                            width: s.maxWidth(),
-                            height: s.hrSize32() + s.hrSize003(),
-                            fit: BoxFit.fill,
+                        SizedBox(
+                          height: 400,
+                          child: SingleChildScrollView(
+                            child: Center(
+                              child: Text(dataString ?? "데이터를 불러오는중..."),
+                              // child: Image.asset(
+                              //   'Images/Graph.png',
+                              //   width: s.maxWidth(),
+                              //   height: s.hrSize32() + s.hrSize003(),
+                              //   fit: BoxFit.fill,
+                              // ),
+                            ),
                           ),
                         ),
                         Row(

@@ -219,11 +219,13 @@ class BluetoothViewModel {
 
   void _saveData() {
     UserFileIO fileIO = UserFileIO();
-    String? machineNameValue = _mapFileIO.keyToValue(deviceAddr);
-    if (machineNameValue == null) {
-      print("Error: deviceAddr not found in the map. Cannot save data.");
+    String machineNameValue = "플레이트로드"; // 이 값을 필요한 기계 이름으로 변경해야 합니다.
+
+    if (machineNameValue.isEmpty) {
+      print("오류: machineNameValue가 잘못되었습니다. 데이터를 저장할 수 없습니다.");
       return;
     }
+
     ExerciseSession session = ExerciseSession(
         machineName: machineNameValue, weightToCountPerSet: lawDatas);
     fileIO.addExerciseSession(DateTime.now(), session);
@@ -233,6 +235,7 @@ class BluetoothViewModel {
   void dispose() {
     print("____________________________________________");
     print(lawDatas);
+    print(lawDatas.length);
     print("____________________________________________");
     _saveData();
     _disconnect(); // 자원 해제 추가

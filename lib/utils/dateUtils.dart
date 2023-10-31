@@ -1,8 +1,14 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 /// Converts a DateTime object to a string in the format YYYY-MM-DD.
 String dateTimeToString(DateTime dt) {
+  return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+}
+
+String nowToString() {
+  DateTime dt = DateTime.now();
   return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
 }
 
