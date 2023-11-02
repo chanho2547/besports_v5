@@ -139,7 +139,7 @@ class UserFileIO {
   // print('시티드로우로 수행한 총 세트 수: $setsForSeatedRow');
   Future<int> getTotalSetsForMachineOn(
       String dateString, String machineName) async {
-    var sessions = await getExerciseSessionsOn(dateString);
+    List<ExerciseSession> sessions = await getExerciseSessionsOn(dateString);
 
     int totalSets = 0;
 
