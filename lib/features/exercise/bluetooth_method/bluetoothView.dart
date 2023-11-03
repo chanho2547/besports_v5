@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:besports_v5/IO/mapFileIO.dart';
 import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
@@ -49,16 +50,30 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   @override
   void initState() {
-    PermissionRequest.requestPermissions();
     super.initState();
+    PermissionRequest.requestPermissions();
+
     _lastNumber = -1;
     flutterTts.setLanguage("ko-KR");
 
+    _initTTS();
     _initAnimationController();
     _checkModal();
     _initializeViewModel(); // ViewModel을 초기화합니다.
     _listenForCountChanges();
     _initPulseAnimation();
+  }
+
+  //TTS 초기화
+  void _initTTS() async {
+    print("TTS 초기화");
+    String macAddress = widget.addr.substring(3);
+
+    print("macAddress :$macAddress");
+    String machinName = macAddress == "E8:D2:3E:98:B5:85" ? "랫풀다운" : "시티드로우";
+    await flutterTts.stop();
+    await flutterTts.speak("$machinName 운동을 시작합니다.");
+    print("TTS 초기화 완료");
   }
 
 //펄스 애니메이션 init

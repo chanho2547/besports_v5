@@ -34,7 +34,7 @@ class BluetoothViewModel {
   BluetoothViewModel({required this.deviceAddr});
   late final QualifiedCharacteristic _charToSubscribe;
   late QualifiedCharacteristic _charToWrite;
-  final MapFileIO _mapFileIO = MapFileIO();
+  //final MapFileIO _mapFileIO = MapFileIO();
   final myProvider = StateProvider<bool>((ref) => false);
 
   bool isPaused = false; // 카운트 일시 중지 상태
