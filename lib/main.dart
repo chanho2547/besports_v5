@@ -57,9 +57,9 @@ class MyHomePageState extends State<MyHomePage> {
 
   void _readNFC() async {
     if (isReadingNfc) return; // 이미 NFC를 읽고 있으면 return
+    isReadingNfc = true; // NFC 읽기 시작 상태로 설정
 
     try {
-      isReadingNfc = true; // NFC 읽기 시작 상태로 설정
       if (!BoolStatus.isModal) {
         bool isAvailable = await NfcManager.instance.isAvailable();
 

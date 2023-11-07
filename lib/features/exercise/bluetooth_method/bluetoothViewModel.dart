@@ -10,6 +10,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 typedef NavigationCallback = void Function();
 
@@ -44,6 +45,8 @@ class BluetoothViewModel {
   bool get isRset => _isRest;
   bool get isConnect => _isConnect;
   set isConnect(bool value) => _isConnect = value;
+  DateTime? _lastCountTime;
+  FlutterTts flutterTts = FlutterTts();
 
   void pushData() {
     print("MapData set: $lawData");
@@ -180,12 +183,40 @@ class BluetoothViewModel {
   // 디바운스된 카운터 업데이트 메서드
   void _updateCount(DiscoveredDevice device) {
     if (!_isRest) {
-      // rest 상태가 아닐 때만 카운트 감소
+      //rest 상태가 아닐 때만 카운트 감소
+      if (countNotifier.value > 0) {
+        // 이전 시간과 현재 시간의 차이를 계산
+        DateTime now = DateTime.now();
+        if (_lastCountTime != null) {
+          Duration difference = now.difference(_lastCountTime!);
+          // 시간 피드백 제공
+          _giveTimeFeedback(difference);
+        }
+        // 현재 시간을 마지막 카운트 시간으로 업데이트
+        _lastCountTime = now;
+      }
       countNotifier.value--;
     }
 
     if (countNotifier.value == 0) {
       countNotifier.value = 5;
+    }
+  }
+
+  void _giveTimeFeedback(Duration difference) async {
+    // 소요된 시간에 따라 다른 피드백을 줍니다.
+    if (difference.inSeconds < 2) {
+      // 너무 빠른 경우
+      await flutterTts.stop();
+      await flutterTts.speak("너무 빠릅니다. 천천히 하세요.");
+    } else if (difference.inSeconds > 4) {
+      // 너무 느린 경우
+      await flutterTts.stop();
+      await flutterTts.speak("너무 느립니다. 속도를 높이세요.");
+    } else {
+      // 적당한 경우
+      await flutterTts.stop();
+      await flutterTts.speak("좋습니다. 그 속도를 유지하세요.");
     }
   }
 

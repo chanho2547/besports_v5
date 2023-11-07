@@ -111,7 +111,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     _viewModel!.initialize();
   }
 
-  //count 변경 감지
+  //count 변경 감지 (구)
   void _listenForCountChanges() {
     _viewModel!.countNotifier.addListener(() {
       _animateCountChange();
@@ -121,6 +121,33 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       }
     });
   }
+
+  // DateTime? _lastCountTime; // 마지막 카운트 변경 시간을 추적하는 변수
+
+  //count 변경 감지 (신)
+//count 변경 감지 (신)
+  // void _listenForCountChanges() {
+  //   _viewModel!.countNotifier.addListener(() {
+  //     try {
+  //       final currentTime = DateTime.now(); // 현재 시간을 기록합니다.
+
+  //       if (_lastCountTime != null) {
+  //         // 이전 카운트 변경 시간이 있으면 시간 차이를 계산합니다.
+  //         final difference = currentTime.difference(_lastCountTime!);
+  //         _giveTimeFeedback(difference); // 시간 피드백 함수를 호출합니다.
+  //       }
+
+  //       _lastCountTime = currentTime; // 마지막 카운트 변경 시간을 갱신합니다.
+  //       _animateCountChange(); // 카운트 변경 애니메이션을 실행합니다.
+
+  //       if (_viewModel!.countNotifier.value == 0) {
+  //         _handleCountZero(); // 카운트가 0이면 처리합니다.
+  //       }
+  //     } catch (error) {
+  //       print('An error occurred in _listenForCountChanges: $error'); // 에러 로깅
+  //     }
+  //   });
+  // }
 
   //count시 애니메이션 처리
   void _animateCountChange() {
