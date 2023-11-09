@@ -6,7 +6,6 @@ import 'package:besports_v5/constants/rSizes.dart';
 import 'package:besports_v5/constants/sizes.dart';
 import 'package:besports_v5/constants/staticStatus.dart';
 import 'package:besports_v5/main.dart';
-import 'package:besports_v5/permission/permissionRequest.dart';
 import 'package:besports_v5/router.dart';
 import 'package:besports_v5/utils/dateUtils.dart';
 import 'package:besports_v5/utils/ttsUtils.dart';
@@ -51,7 +50,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   @override
   void initState() {
     super.initState();
-    PermissionRequest.requestPermissions();
 
     _lastNumber = -1;
     flutterTts.setLanguage("ko-KR");
