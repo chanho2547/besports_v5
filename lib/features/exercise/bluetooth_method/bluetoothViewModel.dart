@@ -4,6 +4,7 @@ import 'package:besports_v5/IO/userFileIO.dart';
 import 'package:besports_v5/constants/staticStatus.dart';
 import 'package:besports_v5/main.dart';
 import 'package:besports_v5/utils/dateUtils.dart';
+import 'package:besports_v5/utils/ttsUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:async';
@@ -25,7 +26,8 @@ class BluetoothViewModel {
   bool _isRest = false;
   static int _retryCount = 0; // 재시도 횟수
   final int _maxRetry = 5; // 최대 재시도 횟수
-  bool _isConnect = false;
+  final ValueNotifier<bool> _connect = ValueNotifier(false);
+  ValueNotifier<bool> get connect => _connect;
 
   List<Map<String, int>> lawDatas = [];
   Map<String, int> lawData = {};
@@ -39,12 +41,12 @@ class BluetoothViewModel {
   final myProvider = StateProvider<bool>((ref) => false);
 
   bool isPaused = false; // 카운트 일시 중지 상태
+  Duration _difference = const Duration(seconds: 1);
+  Duration get difference => _difference;
 
   int get count => _count;
   int get setCount => _setCount;
   bool get isRset => _isRest;
-  bool get isConnect => _isConnect;
-  set isConnect(bool value) => _isConnect = value;
   DateTime? _lastCountTime;
   FlutterTts flutterTts = FlutterTts();
 
@@ -65,6 +67,7 @@ class BluetoothViewModel {
     // 이전 연결/스캔 구독 및 타이머 해제
     _disconnect();
     _scanSubscription?.cancel();
+    _connect.value = true;
 
     countNotifier.value = 5; // 카운터 초기화
     connectedDevices.clear(); // 연결된 장치 목록 초기화
@@ -123,6 +126,7 @@ class BluetoothViewModel {
         }
       }
     }
+    _connect.value = false;
   }
 
   //오류처리 코드
@@ -146,9 +150,6 @@ class BluetoothViewModel {
         .listen((connectionState) async {
       if (connectionState.connectionState == DeviceConnectionState.connected) {
         _retryCount = 0; // 연결에 성공하면 재시도 횟수 초기화
-
-        isConnect = true; // 연결된 장치 목록에 추가
-
         // 화면 리랜더링
         // countNotifier.value = 5;
 
@@ -188,35 +189,19 @@ class BluetoothViewModel {
         // 이전 시간과 현재 시간의 차이를 계산
         DateTime now = DateTime.now();
         if (_lastCountTime != null) {
-          Duration difference = now.difference(_lastCountTime!);
+          _difference = now.difference(_lastCountTime!);
           // 시간 피드백 제공
-          _giveTimeFeedback(difference);
         }
         // 현재 시간을 마지막 카운트 시간으로 업데이트
         _lastCountTime = now;
       }
       countNotifier.value--;
+      numberToKoreanWord(
+          5 - countNotifier.value, countNotifier.value, flutterTts, difference);
     }
 
     if (countNotifier.value == 0) {
       countNotifier.value = 5;
-    }
-  }
-
-  void _giveTimeFeedback(Duration difference) async {
-    // 소요된 시간에 따라 다른 피드백을 줍니다.
-    if (difference.inSeconds < 2) {
-      // 너무 빠른 경우
-      await flutterTts.stop();
-      await flutterTts.speak("너무 빠릅니다. 천천히 하세요.");
-    } else if (difference.inSeconds > 4) {
-      // 너무 느린 경우
-      await flutterTts.stop();
-      await flutterTts.speak("너무 느립니다. 속도를 높이세요.");
-    } else {
-      // 적당한 경우
-      await flutterTts.stop();
-      await flutterTts.speak("좋습니다. 그 속도를 유지하세요.");
     }
   }
 
@@ -245,7 +230,6 @@ class BluetoothViewModel {
       _flutterReactiveBle.clearGattCache(deviceAddr.substring(3));
       connectedDevices.remove(deviceAddr.substring(3));
     }
-    _isConnect = false;
   }
 
   void _saveData() {
