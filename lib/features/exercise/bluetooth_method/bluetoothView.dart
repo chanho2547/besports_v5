@@ -1,13 +1,14 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:besports_v5/IO/mapFileIO.dart';
 import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
 import 'package:besports_v5/constants/sizes.dart';
 import 'package:besports_v5/constants/staticStatus.dart';
 import 'package:besports_v5/main.dart';
-import 'package:besports_v5/permission/permissionRequest.dart';
 import 'package:besports_v5/router.dart';
 import 'package:besports_v5/utils/dateUtils.dart';
+import 'package:besports_v5/utils/ttsUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
@@ -41,23 +42,33 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   late int _lastNumber;
 
-  late RSizes s;
-  late RGaps g;
-
   String _setMessage = "4 SET 남음"; // 초기 메시지는 빈 문자열
 
   @override
   void initState() {
-    PermissionRequest.requestPermissions();
     super.initState();
+
     _lastNumber = -1;
     flutterTts.setLanguage("ko-KR");
 
+    _initTTS();
     _initAnimationController();
     _checkModal();
     _initializeViewModel(); // ViewModel을 초기화합니다.
     _listenForCountChanges();
     _initPulseAnimation();
+  }
+
+  //TTS 초기화
+  void _initTTS() async {
+    print("TTS 초기화");
+    String macAddress = widget.addr.substring(3);
+
+    print("macAddress :$macAddress");
+    String machinName = macAddress == "E8:D2:3E:98:B5:85" ? "랫풀다운" : "시티드로우";
+    await flutterTts.stop();
+    await flutterTts.speak("$machinName 운동을 시작합니다.");
+    print("TTS 초기화 완료");
   }
 
 //펄스 애니메이션 init
@@ -95,7 +106,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     _viewModel!.initialize();
   }
 
-  //count 변경 감지
+  //count 변경 감지 (구)
   void _listenForCountChanges() {
     _viewModel!.countNotifier.addListener(() {
       _animateCountChange();
@@ -105,6 +116,33 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       }
     });
   }
+
+  // DateTime? _lastCountTime; // 마지막 카운트 변경 시간을 추적하는 변수
+
+  //count 변경 감지 (신)
+//count 변경 감지 (신)
+  // void _listenForCountChanges() {
+  //   _viewModel!.countNotifier.addListener(() {
+  //     try {
+  //       final currentTime = DateTime.now(); // 현재 시간을 기록합니다.
+
+  //       if (_lastCountTime != null) {
+  //         // 이전 카운트 변경 시간이 있으면 시간 차이를 계산합니다.
+  //         final difference = currentTime.difference(_lastCountTime!);
+  //         _giveTimeFeedback(difference); // 시간 피드백 함수를 호출합니다.
+  //       }
+
+  //       _lastCountTime = currentTime; // 마지막 카운트 변경 시간을 갱신합니다.
+  //       _animateCountChange(); // 카운트 변경 애니메이션을 실행합니다.
+
+  //       if (_viewModel!.countNotifier.value == 0) {
+  //         _handleCountZero(); // 카운트가 0이면 처리합니다.
+  //       }
+  //     } catch (error) {
+  //       print('An error occurred in _listenForCountChanges: $error'); // 에러 로깅
+  //     }
+  //   });
+  // }
 
   //count시 애니메이션 처리
   void _animateCountChange() {
@@ -164,6 +202,11 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       context: context,
       isDismissible: true, // 바텀 시트 외부를 탭하면 바텀 시트가 닫힙니다.
       builder: (context) {
+        RSizes s = RSizes(MediaQuery.of(context).size.height,
+            MediaQuery.of(context).size.width);
+
+        RGaps g = RGaps(MediaQuery.of(context).size.height,
+            MediaQuery.of(context).size.width);
         return WillPopScope(
           onWillPop: () async => false,
           child: Container(
@@ -264,6 +307,11 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     showModalBottomSheet(
         context: context,
         builder: (context) {
+          RSizes s = RSizes(MediaQuery.of(context).size.height,
+              MediaQuery.of(context).size.width);
+
+          RGaps g = RGaps(MediaQuery.of(context).size.height,
+              MediaQuery.of(context).size.width);
           return Container(
             height: s.rSize("height", 400),
             color: Colors.white,
@@ -307,78 +355,87 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   // 실제 화면을 그리는 코드
   @override
   Widget build(BuildContext context) {
-    //size
-    s = RSizes(
+    // size
+    RSizes s = RSizes(
         MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
 
-    g = RGaps(
+    RGaps g = RGaps(
         MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
+
+    // 로딩 인디케이터와 위젯을 표시하는 ValueListenableBuilder
     return SafeArea(
       child: Scaffold(
-        body: Stack(
-          children: [
-            Positioned(
-              top: s.rSize00(),
-              left: s.rSize00(),
-              right: s.rSize00(),
-              bottom: s.rSize00(),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade800,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(15),
-                    bottomRight: Radius.circular(15),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        s.wrSize05(), //left
-                        s.hrSize015(), //top
-                        s.wrSize05(), //right
-                        s.rSize00(), //bottom
+        body: ValueListenableBuilder<bool>(
+          valueListenable: _viewModel!.connect, // connect ValueNotifier
+          builder: (context, isConnect, _) {
+            if (isConnect) {
+              // 연결 중이면 로딩 인디케이터 표시
+              return const Center(child: CircularProgressIndicator());
+            } else {
+              // 연결이 완료되면 아래 위젯 표시
+              return Stack(
+                children: [
+                  Positioned(
+                    top: s.rSize00(),
+                    left: s.rSize00(),
+                    right: s.rSize00(),
+                    bottom: s.rSize00(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade800,
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(15),
+                          bottomRight: Radius.circular(15),
+                        ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Column(
                         children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(
+                              s.wrSize05(), //left
+                              s.hrSize015(), //top
+                              s.wrSize05(), //right
+                              s.rSize00(), //bottom
                             ),
-                            onPressed: () {
-                              // 뒤로가기 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
-                              _viewModel?.dispose();
-                              Navigator.pop(context);
-                            },
-                          ),
-                          SizedBox(
-                            width: s.wrSize10(),
-                            height: s.wrSize10(),
-                            child: Image.asset("Images/logo_white.png"),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.more_vert,
-                              color: Colors.white,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.arrow_back,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    // 뒤로가기 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
+                                    _viewModel?.dispose();
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                SizedBox(
+                                  width: s.wrSize10(),
+                                  height: s.wrSize10(),
+                                  child: Image.asset("Images/logo_white.png"),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.more_vert,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    // ... 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
+                                    _showSetCountPicker();
+                                  },
+                                ),
+                              ],
                             ),
-                            onPressed: () {
-                              // ... 버튼을 누를 때 수행할 작업을 여기에 작성합니다.
-                              _showSetCountPicker();
-                            },
                           ),
-                        ],
-                      ),
-                    ),
-                    g.vr12(),
-                    _viewModel!.isConnect
-                        ? ValueListenableBuilder<String>(
+                          g.vr12(),
+                          ValueListenableBuilder<String>(
                             valueListenable: _viewModel!.receivedDataNotifier,
                             builder: (context, receivedData, _) => Center(
                               child: Text(
                                 "${recivedDataToRawData(receivedData)} KG",
-                                textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
+                                textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: Sizes.size52,
                                   color: Colors.white,
@@ -386,99 +443,80 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                                 ),
                               ),
                             ),
-                          )
-                        : const Center(
-                            child: Text(
-                              "연결중...",
-                              textAlign: TextAlign.center, // 텍스트 정렬을 중앙으로 설정
-                              style: TextStyle(
-                                fontSize: Sizes.size32,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                           ),
-                    g.vr05(),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          AnimatedBuilder(
-                            animation: _animationController,
-                            builder: (context, child) {
-                              return Transform.scale(
-                                scale: _pulseAnimation.value,
-                                child: Container(
-                                  padding: const EdgeInsets.all(15.0),
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFF373737), // 초록색 띠
-                                    // border: Border.all(
-                                    //   color: Colors.grey.shade100,
-                                    //   width: Sizes.size7,
-                                    // ),
+                          g.vr05(),
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                AnimatedBuilder(
+                                  animation: _animationController,
+                                  builder: (context, child) {
+                                    return Transform.scale(
+                                      scale: _pulseAnimation.value,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(15.0),
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color(0xFF373737),
+                                        ),
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: ValueListenableBuilder<int>(
+                                    valueListenable: _viewModel!.countNotifier,
+                                    builder: (context, count, _) {
+                                      return Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Center(
+                                            child: SizedBox(
+                                              width: 200,
+                                              height: 200,
+                                              child: CircularProgressIndicator(
+                                                value: (5 - count) / 5,
+                                                strokeWidth: 10,
+                                                backgroundColor:
+                                                    Colors.grey.shade400,
+                                                valueColor:
+                                                    const AlwaysStoppedAnimation<
+                                                        Color>(
+                                                  Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Center(
+                                            child: Text(
+                                              '${5 - count}',
+                                              style: const TextStyle(
+                                                fontSize: 100,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
-                                  child: child,
                                 ),
-                              );
-                            },
-                            child: ValueListenableBuilder<int>(
-                              valueListenable: _viewModel!.countNotifier,
-                              builder: (context, count, _) {
-                                if (_viewModel!.countNotifier.value !=
-                                    _lastNumber) {
-                                  numberToKoreanWord(
-                                      5 - count, _lastNumber, flutterTts);
-                                  _lastNumber = _viewModel!.countNotifier.value;
-                                }
-                                return Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Center(
-                                      child: SizedBox(
-                                        width: 200,
-                                        height: 200,
-                                        child: CircularProgressIndicator(
-                                          value: (5 - count) /
-                                              5, // count 값에 따라 진행률이 변경됩니다. 5는 최대 카운트 값입니다.
-                                          strokeWidth: 10,
-                                          backgroundColor: Colors
-                                              .grey.shade400, // 미완료 부분의 색상을 설정
-                                          valueColor:
-                                              const AlwaysStoppedAnimation<
-                                                  Color>(
-                                            Colors.green,
-                                          ), // 완료 부분의 색상을 설정
-                                        ),
-                                      ),
-                                    ),
-                                    Center(
-                                      child: Text(
-                                        '${5 - count}',
-                                        style: const TextStyle(
-                                          fontSize: 100,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
+                                g.vr05(),
+                                Text(_setMessage,
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 40)),
+                              ],
                             ),
                           ),
-                          g.vr05(), // 간격을 주기 위한 코드
-                          Text(_setMessage,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 40)),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+                  ),
+                ],
+              );
+            }
+          },
         ),
       ),
     );

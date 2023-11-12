@@ -8,7 +8,6 @@ import 'package:besports_v5/features/history/history_screen.dart';
 import 'package:besports_v5/features/profile/profile_screen.dart';
 import 'package:besports_v5/features/recommend/recommend_screen.dart';
 import 'package:besports_v5/features/search/search_screen.dart';
-import 'package:besports_v5/permission/permissionRequest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background/flutter_background.dart';
@@ -49,17 +48,15 @@ class MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _readNFC(); // NFC 읽기 시작
-    PermissionRequest.requestPermissions();
-    PermissionService.requestStoragePermission();
   }
 
   bool isReadingNfc = false; // NFC를 읽고 있는지 여부를 저장하는 변수 추가
 
   void _readNFC() async {
     if (isReadingNfc) return; // 이미 NFC를 읽고 있으면 return
+    isReadingNfc = true; // NFC 읽기 시작 상태로 설정
 
     try {
-      isReadingNfc = true; // NFC 읽기 시작 상태로 설정
       if (!BoolStatus.isModal) {
         bool isAvailable = await NfcManager.instance.isAvailable();
 

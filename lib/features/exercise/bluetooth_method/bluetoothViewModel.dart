@@ -4,12 +4,14 @@ import 'package:besports_v5/IO/userFileIO.dart';
 import 'package:besports_v5/constants/staticStatus.dart';
 import 'package:besports_v5/main.dart';
 import 'package:besports_v5/utils/dateUtils.dart';
+import 'package:besports_v5/utils/ttsUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 typedef NavigationCallback = void Function();
 
@@ -24,7 +26,8 @@ class BluetoothViewModel {
   bool _isRest = false;
   static int _retryCount = 0; // 재시도 횟수
   final int _maxRetry = 5; // 최대 재시도 횟수
-  bool _isConnect = false;
+  final ValueNotifier<bool> _connect = ValueNotifier(false);
+  ValueNotifier<bool> get connect => _connect;
 
   List<Map<String, int>> lawDatas = [];
   Map<String, int> lawData = {};
@@ -34,16 +37,18 @@ class BluetoothViewModel {
   BluetoothViewModel({required this.deviceAddr});
   late final QualifiedCharacteristic _charToSubscribe;
   late QualifiedCharacteristic _charToWrite;
-  final MapFileIO _mapFileIO = MapFileIO();
+  //final MapFileIO _mapFileIO = MapFileIO();
   final myProvider = StateProvider<bool>((ref) => false);
 
   bool isPaused = false; // 카운트 일시 중지 상태
+  Duration _difference = const Duration(seconds: 1);
+  Duration get difference => _difference;
 
   int get count => _count;
   int get setCount => _setCount;
   bool get isRset => _isRest;
-  bool get isConnect => _isConnect;
-  set isConnect(bool value) => _isConnect = value;
+  DateTime? _lastCountTime;
+  FlutterTts flutterTts = FlutterTts();
 
   void pushData() {
     print("MapData set: $lawData");
@@ -62,6 +67,7 @@ class BluetoothViewModel {
     // 이전 연결/스캔 구독 및 타이머 해제
     _disconnect();
     _scanSubscription?.cancel();
+    _connect.value = true;
 
     countNotifier.value = 5; // 카운터 초기화
     connectedDevices.clear(); // 연결된 장치 목록 초기화
@@ -120,6 +126,7 @@ class BluetoothViewModel {
         }
       }
     }
+    _connect.value = false;
   }
 
   //오류처리 코드
@@ -143,9 +150,6 @@ class BluetoothViewModel {
         .listen((connectionState) async {
       if (connectionState.connectionState == DeviceConnectionState.connected) {
         _retryCount = 0; // 연결에 성공하면 재시도 횟수 초기화
-
-        isConnect = true; // 연결된 장치 목록에 추가
-
         // 화면 리랜더링
         // countNotifier.value = 5;
 
@@ -180,8 +184,20 @@ class BluetoothViewModel {
   // 디바운스된 카운터 업데이트 메서드
   void _updateCount(DiscoveredDevice device) {
     if (!_isRest) {
-      // rest 상태가 아닐 때만 카운트 감소
+      //rest 상태가 아닐 때만 카운트 감소
+      if (countNotifier.value > 0) {
+        // 이전 시간과 현재 시간의 차이를 계산
+        DateTime now = DateTime.now();
+        if (_lastCountTime != null) {
+          _difference = now.difference(_lastCountTime!);
+          // 시간 피드백 제공
+        }
+        // 현재 시간을 마지막 카운트 시간으로 업데이트
+        _lastCountTime = now;
+      }
       countNotifier.value--;
+      numberToKoreanWord(
+          5 - countNotifier.value, countNotifier.value, flutterTts, difference);
     }
 
     if (countNotifier.value == 0) {
@@ -214,16 +230,17 @@ class BluetoothViewModel {
       _flutterReactiveBle.clearGattCache(deviceAddr.substring(3));
       connectedDevices.remove(deviceAddr.substring(3));
     }
-    _isConnect = false;
   }
 
   void _saveData() {
     UserFileIO fileIO = UserFileIO();
-    String? machineNameValue = _mapFileIO.keyToValue(deviceAddr);
-    if (machineNameValue == null) {
-      print("Error: deviceAddr not found in the map. Cannot save data.");
+    String machineNameValue = "플레이트로드"; // 이 값을 필요한 기계 이름으로 변경해야 합니다.
+
+    if (machineNameValue.isEmpty) {
+      print("오류: machineNameValue가 잘못되었습니다. 데이터를 저장할 수 없습니다.");
       return;
     }
+
     ExerciseSession session = ExerciseSession(
         machineName: machineNameValue, weightToCountPerSet: lawDatas);
     fileIO.addExerciseSession(DateTime.now(), session);
@@ -233,6 +250,7 @@ class BluetoothViewModel {
   void dispose() {
     print("____________________________________________");
     print(lawDatas);
+    print(lawDatas.length);
     print("____________________________________________");
     _saveData();
     _disconnect(); // 자원 해제 추가

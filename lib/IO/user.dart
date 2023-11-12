@@ -10,14 +10,27 @@ class User {
   User({required this.id, required this.exerciseRecords});
 
   factory User.fromJson(Map<String, dynamic> json) {
-    json['exerciseRecords'] = (json['exerciseRecords'] as Map).map(
-      (k, v) => MapEntry(
-          k, (v as List).map((e) => ExerciseSession.fromJson(e)).toList()),
+    return User(
+      id: json['id'] as String,
+      exerciseRecords: (json['exerciseRecords'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry<String, List<ExerciseSession>>(
+            k,
+            (v as List)
+                .map((e) => ExerciseSession.fromJson(e as Map<String, dynamic>))
+                .toList()),
+      ),
     );
-    return _$UserFromJson(json);
   }
 
   Map<String, dynamic> toJson() => _$UserToJson(this);
+
+  // 기본 사용자 생성을 위한 정적 메서드
+  static User initializeDefault() {
+    return User(
+        id: 'defaultID', // 기본 ID 값을 설정합니다.
+        exerciseRecords: {} // 빈 운동 기록을 설정합니다.
+        );
+  }
 }
 
 @JsonSerializable()
@@ -32,4 +45,3 @@ class ExerciseSession {
       _$ExerciseSessionFromJson(json);
   Map<String, dynamic> toJson() => _$ExerciseSessionToJson(this);
 }
-

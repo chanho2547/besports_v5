@@ -5,14 +5,29 @@ import 'package:besports_v5/IO/user.dart';
 import 'package:path_provider/path_provider.dart';
 
 class UserFileIO {
+  Future<void> initializeDefaultUser() async {
+    final file = await _localFile;
+    if (!await file.exists()) {
+      User defaultUser = User.initializeDefault(); // 이런 메서드가 있다고 가정합니다.
+      await saveData(defaultUser);
+    }
+  }
+
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
+    final userDir = Directory('${directory.path}/user_data');
+
+    // 해당 디렉토리가 없으면 생성합니다.
+    if (!await userDir.exists()) {
+      await userDir.create();
+    }
+
+    return userDir.path;
   }
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/userData.json');
+    return File('$path/data.json');
   }
 
   // 파일에서 데이터 로드
@@ -22,7 +37,7 @@ class UserFileIO {
       String jsonString = await file.readAsString();
       return User.fromJson(json.decode(jsonString));
     } else {
-      throw Exception('File does not exist');
+      return User.initializeDefault(); // 파일이 존재하지 않을 때 기본 사용자 반환
     }
   }
 
@@ -124,7 +139,7 @@ class UserFileIO {
   // print('시티드로우로 수행한 총 세트 수: $setsForSeatedRow');
   Future<int> getTotalSetsForMachineOn(
       String dateString, String machineName) async {
-    var sessions = await getExerciseSessionsOn(dateString);
+    List<ExerciseSession> sessions = await getExerciseSessionsOn(dateString);
 
     int totalSets = 0;
 
@@ -133,7 +148,23 @@ class UserFileIO {
         totalSets += session.weightToCountPerSet.length;
       }
     }
-
     return totalSets;
+  }
+
+  Future<String> getExerciseDataAsString(String dateString) async {
+    List<ExerciseSession> sessions = await getExerciseSessionsOn(dateString);
+    StringBuffer sb = StringBuffer();
+    sb.writeln('운동 데이터 - 날짜: $dateString\n');
+    for (var session in sessions) {
+      sb.writeln('기계 이름: ${session.machineName}');
+      for (var set in session.weightToCountPerSet) {
+        if (set.keys.isNotEmpty && set.values.isNotEmpty) {
+          // 여기를 추가
+          sb.writeln('무게: ${set.keys.first}, 횟수: ${set.values.first}');
+        }
+      }
+      sb.writeln('--------------------');
+    }
+    return sb.toString();
   }
 }
