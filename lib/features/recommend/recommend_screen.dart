@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:besports_v5/constants/custom_colors.dart';
 import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'canvas/chat_bubble.dart';
 import 'package:dart_openai/dart_openai.dart';
@@ -23,14 +23,17 @@ class _RecommendScreenState extends State<RecommendScreen> {
   late RSizes s;
   late RGaps g;
 
+  // 질문을 받을 때 버튼을 누르면 항목을 선택해줄 매개변수
   final ValueNotifier<int> _selectGender = ValueNotifier<int>(-1);
   final ValueNotifier<int> _selectGoal = ValueNotifier<int>(-1);
   final ValueNotifier<int> _selectDivide = ValueNotifier<int>(-1);
   final ValueNotifier<List<int>> _selectPart = ValueNotifier<List<int>>([]);
   final ValueNotifier<int> _selectTime = ValueNotifier<int>(-1);
 
+  // 질문의 답변을 받을 String
   String answerPrint = "";
 
+  // 질문 생성기 (버튼을 누르면 String으로 변환된다.)
   String generateQuestion() {
     String goal = "";
     if (_selectGoal.value == 0) {
@@ -97,6 +100,7 @@ class _RecommendScreenState extends State<RecommendScreen> {
     return prompt;
   }
 
+  // openAI chatGPT 불러오는 함수
   Future<String> fetchGPTResponse(String prompt) async {
     const url =
         'https://api.openai.com/v1/chat/completions'; // apiUrl을 gpt-3.5-turbo의 endpoint로 변경
@@ -122,11 +126,43 @@ class _RecommendScreenState extends State<RecommendScreen> {
       }),
     );
 
+    if (response.statusCode == 429) {
+      var retryAfter = int.parse(response.headers['retry-after'] ?? '60');
+      await Future.delayed(Duration(seconds: retryAfter));
+      return fetchGPTResponse(prompt);
+    }
+
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       return data['choices'][0]['message']['content'].trim();
     } else {
       throw Exception('Failed to fetch data from OpenAI');
+    }
+  }
+
+  // 로딩중일때 새로고침 아이콘을 띄우기 위한 bool
+  bool isLoading = false;
+
+  // 답변을 받을 때 사용되는 함수 (문제 발생 메시지는 출력 가능)
+  Future<void> getRecommendation() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      String prompt = generateQuestion();
+      String response = await compute(fetchGPTResponse, prompt);
+      setState(() {
+        answerPrint = "당신을 위한 추천 :\n$response";
+      });
+    } catch (e) {
+      setState(() {
+        answerPrint = "문제가 발생했습니다, 다시 시도해주십시오. $e";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -137,9 +173,8 @@ class _RecommendScreenState extends State<RecommendScreen> {
     g = RGaps(
         MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
 
-    bool isLoading = false;
-
     return SafeArea(
+      // 헤더파일
       child: Scaffold(
         backgroundColor: custom_colors.backgroundDarkWhite,
         appBar: PreferredSize(
@@ -166,6 +201,8 @@ class _RecommendScreenState extends State<RecommendScreen> {
               child: Column(
                 children: [
                   g.vr02(),
+
+                  // 화면 제목
                   Text(
                     'Workout Recommend',
                     style: TextStyle(
@@ -177,6 +214,8 @@ class _RecommendScreenState extends State<RecommendScreen> {
                 ],
               ),
             ),
+
+            // 화면에 뜨는 버튼 -> 질문 생성 가능
             g.vr01(),
             Row(
               children: [
@@ -395,21 +434,12 @@ class _RecommendScreenState extends State<RecommendScreen> {
                 ),
               ],
             ),
+
+            // 운동 추천 버튼 -> 누르면 질문 생성 후 -> 위의 함수를 통해 Open AI에 보냄
             g.vr03(),
             Center(
               child: GestureDetector(
-                onTap: () async {
-                  setState(() {
-                    isLoading = true; // 로딩 시작
-                  });
-
-                  String prompt = generateQuestion();
-                  String response = await fetchGPTResponse(prompt);
-                  setState(() {
-                    answerPrint = "당신을 위한 추천 :\n$response";
-                    isLoading = false; // 로딩 종료
-                  });
-                },
+                onTap: getRecommendation,
                 child: Container(
                   width: s.wrSize40(),
                   height: s.hrSize04(),
@@ -429,18 +459,25 @@ class _RecommendScreenState extends State<RecommendScreen> {
                 ),
               ),
             ),
+
+            // 질문 출력
             g.vr05(),
             isLoading
+
+                // isLoading bool에 따라서 로딩중일 때 로딩 창 표시
                 ? const Center(
                     child: CircularProgressIndicator(
                       color: custom_colors.bgWhite,
                     ),
                   )
+
+                // loading이 끝나면 답변 생성 후 ChatBubble을 통해 답변 출력
                 : Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: s.wrSize08(),
                     ),
                     child: Center(
+                      // ChatBubble -> 답변 생성 Canvas (chat_bubble.dart라는 파일 만들어서 import)
                       child: ChatBubble(
                         child: Text(
                           answerPrint,
@@ -458,6 +495,7 @@ class _RecommendScreenState extends State<RecommendScreen> {
     );
   }
 
+  // 질문 생성 시 버튼을 누를 때 단일 선택이 가능하도록 하는 함수
   GestureDetector selectButton({
     required ValueNotifier<int> type,
     required int typeChoice,
@@ -500,6 +538,7 @@ class _RecommendScreenState extends State<RecommendScreen> {
     );
   }
 
+  // 질문 생성 시 버튼을 누를 때 복수 선택이 가능하도록 하는 함수
   GestureDetector selectMultipleButton({
     required ValueNotifier<List<int>> type,
     required int typeChoice,
