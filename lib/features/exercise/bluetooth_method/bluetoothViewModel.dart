@@ -196,8 +196,8 @@ class BluetoothViewModel {
         _lastCountTime = now;
       }
       countNotifier.value--;
-      numberToKoreanWord(
-          5 - countNotifier.value, countNotifier.value, flutterTts, difference);
+      numberToKoreanWord(5 - countNotifier.value, countNotifier.value,
+          flutterTts, difference, setCount);
     }
 
     if (countNotifier.value == 0) {
