@@ -16,5 +16,12 @@ DateTime stringToDateTime(String str) {
 }
 
 String? recivedDataToRawData(String data) {
-  return data.replaceAll("\$r", '').replaceAll(';', '');
+  String splitData = data.replaceAll("\$r", '').replaceAll(';', '');
+  return roundToNearestMultiple(splitData);
+}
+
+String? roundToNearestMultiple(String numberString) {
+  double number = double.parse(numberString);
+  double nearestMultiple = (number / 1.25).roundToDouble() * 1.25;
+  return nearestMultiple.toStringAsFixed(1);
 }

@@ -434,7 +434,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                             valueListenable: _viewModel!.receivedDataNotifier,
                             builder: (context, receivedData, _) => Center(
                               child: Text(
-                                "${recivedDataToRawData(receivedData)} KG",
+                                "$receivedData KG",
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: Sizes.size52,

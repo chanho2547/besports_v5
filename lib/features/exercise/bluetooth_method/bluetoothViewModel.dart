@@ -175,7 +175,7 @@ class BluetoothViewModel {
     String data = recivedDataToRawData(receivedData)!;
     lawData.putIfAbsent(data, () => 0);
     lawData[data] = lawData[data]! + 1;
-    receivedDataNotifier.value = receivedData;
+    receivedDataNotifier.value = data;
     print("Received string from device: $lawData");
     _updateCount(device);
     print("count 업데이트");
