@@ -1,8 +1,6 @@
-import 'package:besports_v5/IO/mapFileIO.dart';
 import 'package:besports_v5/IO/user.dart';
 import 'package:besports_v5/IO/userFileIO.dart';
 import 'package:besports_v5/constants/staticStatus.dart';
-import 'package:besports_v5/main.dart';
 import 'package:besports_v5/utils/dateUtils.dart';
 import 'package:besports_v5/utils/ttsUtils.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,8 +19,9 @@ class BluetoothViewModel {
   ValueNotifier<int> countNotifier = ValueNotifier<int>(0);
   final Set<String> connectedDevices = {};
   StreamSubscription? _scanSubscription;
-  int _setCount = 4;
-  final int _count = 5;
+  int _setCount = 0;
+  final int _finalSetCount = 4;
+  final int _finalCount = 10;
   bool _isRest = false;
   static int _retryCount = 0; // 재시도 횟수
   final int _maxRetry = 5; // 최대 재시도 횟수
@@ -44,7 +43,8 @@ class BluetoothViewModel {
   Duration _difference = const Duration(seconds: 1);
   Duration get difference => _difference;
 
-  int get count => _count;
+  int get finalSetCount => _finalSetCount;
+  int get finalCount => _finalCount;
   int get setCount => _setCount;
   bool get isRset => _isRest;
   DateTime? _lastCountTime;
@@ -62,6 +62,10 @@ class BluetoothViewModel {
     --_setCount;
   }
 
+  void plusSetCount() {
+    ++_setCount;
+  }
+
   // 초기화 메서드
   void initialize() async {
     // 이전 연결/스캔 구독 및 타이머 해제
@@ -69,7 +73,7 @@ class BluetoothViewModel {
     _scanSubscription?.cancel();
     _connect.value = true;
 
-    countNotifier.value = 5; // 카운터 초기화
+    countNotifier.value = 0; // 카운터 초기화
     connectedDevices.clear(); // 연결된 장치 목록 초기화
 
     _startScanning(); // 스캔 시작 메서드 호출
@@ -185,7 +189,7 @@ class BluetoothViewModel {
   void _updateCount(DiscoveredDevice device) {
     if (!_isRest) {
       //rest 상태가 아닐 때만 카운트 감소
-      if (countNotifier.value > 0) {
+      if (countNotifier.value < _finalCount) {
         // 이전 시간과 현재 시간의 차이를 계산
         DateTime now = DateTime.now();
         if (_lastCountTime != null) {
@@ -195,13 +199,13 @@ class BluetoothViewModel {
         // 현재 시간을 마지막 카운트 시간으로 업데이트
         _lastCountTime = now;
       }
-      countNotifier.value--;
-      numberToKoreanWord(5 - countNotifier.value, countNotifier.value,
-          flutterTts, difference, setCount);
+      ++countNotifier.value;
+      numberToKoreanWord(countNotifier.value, _finalCount, flutterTts,
+          difference, setCount, _finalSetCount);
     }
 
-    if (countNotifier.value == 0) {
-      countNotifier.value = 5;
+    if (countNotifier.value == _finalCount) {
+      countNotifier.value = 0;
     }
   }
 

@@ -35,28 +35,21 @@ class _BluetoothScreenState extends State<BluetoothScreen>
   late Animation<double> _pulseAnimation;
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
-
   final FlutterTts flutterTts = FlutterTts();
-
   final int _count = 0;
-
-  late int _lastNumber;
-
-  String _setMessage = "4 SET 남음"; // 초기 메시지는 빈 문자열
+  late String _setMessage; // 초기 메시지는 빈 문자열
 
   @override
   void initState() {
     super.initState();
-
-    _lastNumber = -1;
     flutterTts.setLanguage("ko-KR");
-
     _initTTS();
     _initAnimationController();
     _checkModal();
     _initializeViewModel(); // ViewModel을 초기화합니다.
     _listenForCountChanges();
     _initPulseAnimation();
+    _setMessage = "${_viewModel!.finalSetCount} SET 남음";
   }
 
   //TTS 초기화
@@ -111,38 +104,11 @@ class _BluetoothScreenState extends State<BluetoothScreen>
     _viewModel!.countNotifier.addListener(() {
       _animateCountChange();
 
-      if (_viewModel!.countNotifier.value == 0) {
+      if (_viewModel!.countNotifier.value == _viewModel!.finalCount) {
         _handleCountZero();
       }
     });
   }
-
-  // DateTime? _lastCountTime; // 마지막 카운트 변경 시간을 추적하는 변수
-
-  //count 변경 감지 (신)
-//count 변경 감지 (신)
-  // void _listenForCountChanges() {
-  //   _viewModel!.countNotifier.addListener(() {
-  //     try {
-  //       final currentTime = DateTime.now(); // 현재 시간을 기록합니다.
-
-  //       if (_lastCountTime != null) {
-  //         // 이전 카운트 변경 시간이 있으면 시간 차이를 계산합니다.
-  //         final difference = currentTime.difference(_lastCountTime!);
-  //         _giveTimeFeedback(difference); // 시간 피드백 함수를 호출합니다.
-  //       }
-
-  //       _lastCountTime = currentTime; // 마지막 카운트 변경 시간을 갱신합니다.
-  //       _animateCountChange(); // 카운트 변경 애니메이션을 실행합니다.
-
-  //       if (_viewModel!.countNotifier.value == 0) {
-  //         _handleCountZero(); // 카운트가 0이면 처리합니다.
-  //       }
-  //     } catch (error) {
-  //       print('An error occurred in _listenForCountChanges: $error'); // 에러 로깅
-  //     }
-  //   });
-  // }
 
   //count시 애니메이션 처리
   void _animateCountChange() {
@@ -153,13 +119,14 @@ class _BluetoothScreenState extends State<BluetoothScreen>
 
   //count가 0일때 처리
   void _handleCountZero() {
-    if (_viewModel!.setCount > 0) {
+    if (_viewModel!.setCount != _viewModel!.finalSetCount) {
       _showRestTimeSheet();
     }
     setState(() {
-      _viewModel?.minusSetCount();
-      _setMessage = "${_viewModel?.setCount} SET 남음";
-      if (_viewModel?.setCount == 0) {
+      _viewModel?.plusSetCount();
+      _setMessage =
+          "${_viewModel!.finalSetCount - _viewModel!.setCount} SET 남음";
+      if (_viewModel?.setCount == _viewModel!.finalSetCount) {
         _setMessage = "운동 종료";
         _viewModel?.dispose();
         Navigator.pop(context);
@@ -309,9 +276,6 @@ class _BluetoothScreenState extends State<BluetoothScreen>
         builder: (context) {
           RSizes s = RSizes(MediaQuery.of(context).size.height,
               MediaQuery.of(context).size.width);
-
-          RGaps g = RGaps(MediaQuery.of(context).size.height,
-              MediaQuery.of(context).size.width);
           return Container(
             height: s.rSize("height", 400),
             color: Colors.white,
@@ -323,7 +287,8 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                   onTap: () {
                     setState(() {
                       _viewModel?.setCountSet = index + 1;
-                      _setMessage = '남은 Set: ${_viewModel?.setCount}';
+                      _setMessage =
+                          '남은 Set: ${_viewModel!.finalSetCount - _viewModel!.setCount}';
                     });
                     Navigator.pop(context);
                   },
@@ -339,7 +304,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
       () {
         _progressAnimation = Tween<double>(
           begin: _progressAnimation.value, // 현재의 애니메이션 값
-          end: (5 - _count) / 5, // 새로운 count 값으로 계산된 값
+          end: _count / _viewModel!.finalCount, // 새로운 count 값으로 계산된 값
         ).animate(
           CurvedAnimation(
             parent: _animationController,
@@ -475,7 +440,8 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                                               width: 200,
                                               height: 200,
                                               child: CircularProgressIndicator(
-                                                value: (5 - count) / 5,
+                                                value: count /
+                                                    _viewModel!.finalCount,
                                                 strokeWidth: 10,
                                                 backgroundColor:
                                                     Colors.grey.shade400,
@@ -489,7 +455,7 @@ class _BluetoothScreenState extends State<BluetoothScreen>
                                           ),
                                           Center(
                                             child: Text(
-                                              '${5 - count}',
+                                              '$count',
                                               style: const TextStyle(
                                                 fontSize: 100,
                                                 color: Colors.white,

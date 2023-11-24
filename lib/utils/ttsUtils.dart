@@ -1,19 +1,20 @@
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-Future<void> numberToKoreanWord(int number, int lastNumber,
-    FlutterTts flutterTts, Duration difference, int set) async {
+Future<void> numberToKoreanWord(int number, int finalCount,
+    FlutterTts flutterTts, Duration difference, int set, finalSet) async {
   //_lastNumber = number; // 마지막 번호를 업데이트
-  if (number == 0 && lastNumber == 0) {
+  if (number == 0 && finalCount == 0) {
     // 이전 번호도 0이었으므로 아무것도 하지 않음
   } else {
     try {
-      if (number == 4) {
+      if (set == finalSet) {
+        await flutterTts.stop();
+        await flutterTts.speak("운동종료");
+      } else if (number == finalCount - 1) {
         await flutterTts.stop();
         await flutterTts.speak("마지막 하나");
-      } else if (number == 5) {
+      } else if (number == finalCount && set != finalSet) {
         await flutterTts.stop();
         await flutterTts.speak("$set세트 종료 setRest시작");
       } else if (difference.inSeconds < 2.3 && number != 1) {
@@ -25,7 +26,7 @@ Future<void> numberToKoreanWord(int number, int lastNumber,
         await flutterTts.stop();
         await flutterTts.speak("너무 느립니다. 속도를 높이세요.");
       } else {
-        await numberToTts(number, lastNumber, flutterTts);
+        await numberToTts(number, finalCount, flutterTts);
       }
     } catch (e) {
       print("Error occurred: $e");

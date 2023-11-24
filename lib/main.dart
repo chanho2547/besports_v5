@@ -1,4 +1,3 @@
-import 'package:android_intent_plus/android_intent.dart';
 import 'package:besports_v5/constants/sizes.dart';
 import 'package:besports_v5/features/dashboard/dashboard_screen.dart';
 import 'package:besports_v5/features/exercise/bluetooth_method/bluetoothView.dart';
@@ -7,10 +6,8 @@ import 'package:besports_v5/features/dashboard/Screens/bottomModalView.dart';
 import 'package:besports_v5/features/history/history_screen.dart';
 import 'package:besports_v5/features/profile/profile_screen.dart';
 import 'package:besports_v5/features/recommend/recommend_screen.dart';
-import 'package:besports_v5/features/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_background/flutter_background.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 
 void myTask() {
