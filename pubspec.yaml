@@ -53,8 +53,8 @@ dependencies:
   flutter_native_splash: ^2.3.2
 
   flutter_tts: ^3.2.1
-
-  dart_openai: ^4.0.0
+  http: ^1.1.0
+  chat_gpt_sdk: ^2.2.5
 
   audioplayers: ^5.1.0
 

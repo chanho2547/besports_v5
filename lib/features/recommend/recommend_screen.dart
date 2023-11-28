@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:besports_v5/constants/custom_colors.dart';
 import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
@@ -6,7 +7,7 @@ import 'package:besports_v5/constants/rSizes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'canvas/chat_bubble.dart';
-import 'package:dart_openai/dart_openai.dart';
+import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:http/http.dart' as http;
 
 class RecommendScreen extends StatefulWidget {
@@ -22,6 +23,13 @@ class RecommendScreen extends StatefulWidget {
 class _RecommendScreenState extends State<RecommendScreen> {
   late RSizes s;
   late RGaps g;
+  static const String tokenApi =
+      "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";
+
+  final openAI = OpenAI.instance.build(
+      token: tokenApi,
+      baseOption: HttpSetup(receiveTimeout: const Duration(seconds: 5)),
+      enableLog: true);
 
   // 질문을 받을 때 버튼을 누르면 항목을 선택해줄 매개변수
   final ValueNotifier<int> _selectGender = ValueNotifier<int>(-1);
@@ -100,70 +108,31 @@ class _RecommendScreenState extends State<RecommendScreen> {
     return prompt;
   }
 
-  // openAI chatGPT 불러오는 함수
-  Future<String> fetchGPTResponse(String prompt) async {
-    const url =
-        'https://api.openai.com/v1/chat/completions'; // apiUrl을 gpt-3.5-turbo의 endpoint로 변경
-    final headers = {
-      'Authorization':
-          'Bearer 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', // 여기에 실제 API 키를 넣으세요
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
+  Future<String> _getAnswerGPT(String prompt) async {
+    if (tokenApi.isEmpty) {
+      throw Exception('API token is not set.');
+    }
 
     final response = await http.post(
-      Uri.parse(url),
-      headers: headers,
-      body: json.encode({
-        'model': 'gpt-3.5-turbo',
-        'messages': [
-          {
-            'role': 'user',
-            'content': prompt,
-          },
-        ],
-        'max_tokens': 500,
+      Uri.parse("https://api.openai.com/v1/chat/completions"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $tokenApi'
+      },
+      body: jsonEncode({
+        "model": "text-davinci-003",
+        'prompt': prompt,
+        'max_tokens': 1000,
+        'temperature': 0,
+        'top_p': 1,
+        'frequency_penalty': 0,
+        'presence_penalty': 0
       }),
     );
+    Map<String, dynamic> newresponse =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
-    if (response.statusCode == 429) {
-      var retryAfter = int.parse(response.headers['retry-after'] ?? '60');
-      await Future.delayed(Duration(seconds: retryAfter));
-      return fetchGPTResponse(prompt);
-    }
-
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      return data['choices'][0]['message']['content'].trim();
-    } else {
-      throw Exception('Failed to fetch data from OpenAI');
-    }
-  }
-
-  // 로딩중일때 새로고침 아이콘을 띄우기 위한 bool
-  bool isLoading = false;
-
-  // 답변을 받을 때 사용되는 함수 (문제 발생 메시지는 출력 가능)
-  Future<void> getRecommendation() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-
-      String prompt = generateQuestion();
-      String response = await compute(fetchGPTResponse, prompt);
-      setState(() {
-        answerPrint = "당신을 위한 추천 :\n$response";
-      });
-    } catch (e) {
-      setState(() {
-        answerPrint = "문제가 발생했습니다, 다시 시도해주십시오. $e";
-      });
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+    return newresponse['choices'][0]['text'];
   }
 
   @override
@@ -439,7 +408,13 @@ class _RecommendScreenState extends State<RecommendScreen> {
             g.vr03(),
             Center(
               child: GestureDetector(
-                onTap: getRecommendation,
+                onTap: () async {
+                  String prompt = generateQuestion();
+                  String answer = await _getAnswerGPT(prompt);
+                  setState(() {
+                    answerPrint = answer;
+                  });
+                },
                 child: Container(
                   width: s.wrSize40(),
                   height: s.hrSize04(),
@@ -462,33 +437,24 @@ class _RecommendScreenState extends State<RecommendScreen> {
 
             // 질문 출력
             g.vr05(),
-            isLoading
-
-                // isLoading bool에 따라서 로딩중일 때 로딩 창 표시
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      color: custom_colors.bgWhite,
-                    ),
-                  )
-
-                // loading이 끝나면 답변 생성 후 ChatBubble을 통해 답변 출력
-                : Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: s.wrSize08(),
-                    ),
-                    child: Center(
-                      // ChatBubble -> 답변 생성 Canvas (chat_bubble.dart라는 파일 만들어서 import)
-                      child: ChatBubble(
-                        child: Text(
-                          answerPrint,
-                          style: TextStyle(
-                            fontSize: s.hrSize015(),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
+            // loading이 끝나면 답변 생성 후 ChatBubble을 통해 답변 출력
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: s.wrSize08(),
+              ),
+              child: Center(
+                // ChatBubble -> 답변 생성 Canvas (chat_bubble.dart라는 파일 만들어서 import)
+                child: ChatBubble(
+                  child: Text(
+                    answerPrint,
+                    style: TextStyle(
+                      fontSize: s.hrSize015(),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
