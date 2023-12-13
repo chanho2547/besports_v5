@@ -1,14 +1,14 @@
-import 'dart:convert';
+import 'dart:ui';
 
 import 'package:besports_v5/constants/custom_colors.dart';
 import 'package:besports_v5/constants/gaps.dart';
 import 'package:besports_v5/constants/rGaps.dart';
 import 'package:besports_v5/constants/rSizes.dart';
+import 'package:besports_v5/env.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'canvas/chat_bubble.dart';
-import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
-import 'package:http/http.dart' as http;
+import 'package:dart_openai/dart_openai.dart';
 
 class RecommendScreen extends StatefulWidget {
   const RecommendScreen({super.key});
@@ -23,13 +23,11 @@ class RecommendScreen extends StatefulWidget {
 class _RecommendScreenState extends State<RecommendScreen> {
   late RSizes s;
   late RGaps g;
-  static const String tokenApi =
-      "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";
 
-  final openAI = OpenAI.instance.build(
-      token: tokenApi,
-      baseOption: HttpSetup(receiveTimeout: const Duration(seconds: 5)),
-      enableLog: true);
+  // final openAI = OpenAI.instance.build(
+  //     token: tokenApi,
+  //     baseOption: HttpSetup(receiveTimeout: const Duration(seconds: 5)),
+  //     enableLog: true);
 
   // 질문을 받을 때 버튼을 누르면 항목을 선택해줄 매개변수
   final ValueNotifier<int> _selectGender = ValueNotifier<int>(-1);
@@ -37,6 +35,93 @@ class _RecommendScreenState extends State<RecommendScreen> {
   final ValueNotifier<int> _selectDivide = ValueNotifier<int>(-1);
   final ValueNotifier<List<int>> _selectPart = ValueNotifier<List<int>>([]);
   final ValueNotifier<int> _selectTime = ValueNotifier<int>(-1);
+
+  // 질문 생성 시 버튼을 누를 때 단일 선택이 가능하도록 하는 함수
+  GestureDetector selectButton({
+    required ValueNotifier<int> type,
+    required int typeChoice,
+    required double w,
+    required double h,
+    required String text,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (type.value == typeChoice) {
+            type.value = -1;
+          } else {
+            type.value = typeChoice;
+          }
+        });
+      },
+      child: Container(
+        width: w,
+        height: h,
+        decoration: BoxDecoration(
+          color: type.value == typeChoice
+              ? custom_colors.besportsGreen
+              : custom_colors.consumeLightGreen,
+          borderRadius: BorderRadius.circular(s.hrSize007()),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: s.wrSize03(),
+              fontWeight: FontWeight.w600,
+              color: type.value == typeChoice
+                  ? custom_colors.bgWhite
+                  : custom_colors.black,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // 질문 생성 시 버튼을 누를 때 복수 선택이 가능하도록 하는 함수
+  GestureDetector selectMultipleButton({
+    required ValueNotifier<List<int>> type,
+    required int typeChoice,
+    required double w,
+    required double h,
+    required String text,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (type.value.contains(typeChoice)) {
+            type.value.remove(typeChoice);
+          } else {
+            type.value.add(typeChoice);
+          }
+          type.notifyListeners();
+        });
+      },
+      child: Container(
+        width: w,
+        height: h,
+        decoration: BoxDecoration(
+          color: type.value.contains(typeChoice)
+              ? custom_colors.besportsGreen
+              : custom_colors.consumeLightGreen,
+          borderRadius: BorderRadius.circular(s.hrSize007()),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: s.wrSize03(),
+              fontWeight: FontWeight.w600,
+              color: type.value.contains(typeChoice)
+                  ? custom_colors.bgWhite
+                  : custom_colors.black,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   // 질문의 답변을 받을 String
   String answerPrint = "";
@@ -108,32 +193,32 @@ class _RecommendScreenState extends State<RecommendScreen> {
     return prompt;
   }
 
-  Future<String> _getAnswerGPT(String prompt) async {
-    if (tokenApi.isEmpty) {
-      throw Exception('API token is not set.');
-    }
+  Future<String> chatGpt(String prompt) async {
+    OpenAI.apiKey = "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";
 
-    final response = await http.post(
-      Uri.parse("https://api.openai.com/v1/chat/completions"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $tokenApi'
-      },
-      body: jsonEncode({
-        "model": "text-davinci-003",
-        'prompt': prompt,
-        'max_tokens': 1000,
-        'temperature': 0,
-        'top_p': 1,
-        'frequency_penalty': 0,
-        'presence_penalty': 0
-      }),
+    final completion = await OpenAI.instance.completion.create(
+      model: "text-davinci-003",
+      prompt: prompt,
     );
-    Map<String, dynamic> newresponse =
-        jsonDecode(utf8.decode(response.bodyBytes));
 
-    return newresponse['choices'][0]['text'];
+    return completion.choices[0].text;
   }
+
+  // Future<String> chatComplete(String question) async {
+  //   final request = ChatCompleteText(
+  //       messages: [Messages(role: Role.user, content: 'Hello')],
+  //       maxToken: 200,
+  //       model: GptTurboChatModel());
+
+  //   String answer = "";
+
+  //   final response = await openAI.onChatCompletion(request: request);
+  //   for (var element in response!.choices) {
+  //     debugPrint("data -> ${element.message?.content}");
+  //     answer += element.message!.content;
+  //   }
+  //   return answer;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -410,7 +495,7 @@ class _RecommendScreenState extends State<RecommendScreen> {
               child: GestureDetector(
                 onTap: () async {
                   String prompt = generateQuestion();
-                  String answer = await _getAnswerGPT(prompt);
+                  String answer = await chatGpt(prompt);
                   setState(() {
                     answerPrint = answer;
                   });
@@ -456,93 +541,6 @@ class _RecommendScreenState extends State<RecommendScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  // 질문 생성 시 버튼을 누를 때 단일 선택이 가능하도록 하는 함수
-  GestureDetector selectButton({
-    required ValueNotifier<int> type,
-    required int typeChoice,
-    required double w,
-    required double h,
-    required String text,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (type.value == typeChoice) {
-            type.value = -1;
-          } else {
-            type.value = typeChoice;
-          }
-        });
-      },
-      child: Container(
-        width: w,
-        height: h,
-        decoration: BoxDecoration(
-          color: type.value == typeChoice
-              ? custom_colors.besportsGreen
-              : custom_colors.consumeLightGreen,
-          borderRadius: BorderRadius.circular(s.hrSize007()),
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: s.wrSize03(),
-              fontWeight: FontWeight.w600,
-              color: type.value == typeChoice
-                  ? custom_colors.bgWhite
-                  : custom_colors.black,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // 질문 생성 시 버튼을 누를 때 복수 선택이 가능하도록 하는 함수
-  GestureDetector selectMultipleButton({
-    required ValueNotifier<List<int>> type,
-    required int typeChoice,
-    required double w,
-    required double h,
-    required String text,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (type.value.contains(typeChoice)) {
-            type.value.remove(typeChoice);
-          } else {
-            type.value.add(typeChoice);
-          }
-          type.notifyListeners();
-        });
-      },
-      child: Container(
-        width: w,
-        height: h,
-        decoration: BoxDecoration(
-          color: type.value.contains(typeChoice)
-              ? custom_colors.besportsGreen
-              : custom_colors.consumeLightGreen,
-          borderRadius: BorderRadius.circular(s.hrSize007()),
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: s.wrSize03(),
-              fontWeight: FontWeight.w600,
-              color: type.value.contains(typeChoice)
-                  ? custom_colors.bgWhite
-                  : custom_colors.black,
-            ),
-          ),
         ),
       ),
     );
